@@ -213,6 +213,26 @@ nav.bottom a.fab {
 }
 nav.bottom a.fab .ico { width: 28px; height: 28px; }
 
+.scan { background: linear-gradient(135deg, var(--primary-soft), var(--surface) 70%); }
+label.btn:has(input:disabled) { opacity: .5; pointer-events: none; }
+.scanning { display: flex; align-items: center; gap: 10px; margin-top: 12px; font-weight: 600; color: var(--primary); }
+.spin { width: 18px; height: 18px; border-radius: 50%; border: 3px solid var(--primary-soft); border-top-color: var(--primary); animation: gira .8s linear infinite; flex: none; }
+@keyframes gira { to { transform: rotate(360deg); } }
+.okdoc { display: flex; align-items: center; gap: 8px; margin-top: 12px; flex-wrap: wrap; font-weight: 700; }
+.okdoc select { width: auto; min-height: 40px; padding: 6px 10px; }
+.linechip { border: 0; cursor: pointer; text-align: left; white-space: normal; font-weight: 500; font-size: 13px; }
+input.dafattura, textarea.dafattura { background: var(--warn-soft); }
+details.altri > summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; font-weight: 700; }
+details.altri > summary::-webkit-details-marker { display: none; }
+.adddoc { border-top: 1px solid var(--border); margin-top: 14px; padding-top: 14px; }
+.viewer { position: fixed; inset: 0; z-index: 100; background: rgba(10,12,24,.94); display: flex; flex-direction: column; }
+.vbar { display: flex; gap: 8px; align-items: center; padding: calc(10px + env(safe-area-inset-top)) 12px 10px; background: var(--surface); }
+.vbar .vt { flex: 1; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.vbar .btn { min-height: 40px; padding: 8px 14px; }
+.vbody { flex: 1; overflow: auto; display: flex; align-items: flex-start; justify-content: center; }
+.vbody img { max-width: 100%; height: auto; display: block; margin: auto; }
+.vbody iframe { width: 100%; height: 100%; border: 0; background: #fff; }
+
 /* Varie */
 .toast {
   position: fixed; left: 50%; bottom: calc(100px + env(safe-area-inset-bottom)); transform: translateX(-50%) translateY(20px);
@@ -251,7 +271,7 @@ nav.bottom a.fab .ico { width: 28px; height: 28px; }
    (finisce con /exec). Non è un segreto: senza PIN non apre nulla.
    ========================================================= */
 const API_URL = 'https://script.google.com/macros/s/AKfycbxdj3IFzUgoMA3PLSxcetu9Q_yqGX2kvQlXXsqEg4Z_WU0d80_XHhrQnap_DK02Ehxo/exec';
-const VERSIONE = '2.0';
+const VERSIONE = '3.0';
 
 const STATI = ['In uso', 'In riparazione', 'Sostituito', 'Venduto', 'Dismesso'];
 const AMBIENTI = ['Cucina', 'Soggiorno', 'Camera da letto', 'Cameretta', 'Bagno', 'Lavanderia', 'Studio', 'Taverna', 'Garage', 'Esterno'];
@@ -436,6 +456,106 @@ function esci(avvisaServer = true) {
   render();
 }
 
+/* ---------- File: preparazione e invio ---------- */
+const MAX_MB = 10;
+const TIPI_DOC = ['Fattura', 'Scontrino', 'Certificato garanzia', 'Manuale', 'Installazione', 'Manutenzione', 'Foto prodotto', 'Foto targhetta', 'Altro'];
+const CAMPI_EURO = ['Prezzo', 'IVA', 'Spese consegna', 'Spese installazione'];
+
+function aBase64(blob) {
+  return new Promise((ok, ko) => {
+    const r = new FileReader();
+    r.onload = () => ok(String(r.result).split(',')[1] || '');
+    r.onerror = () => ko(new Error('Non riesco a leggere il file.'));
+    r.readAsDataURL(blob);
+  });
+}
+
+// Le foto del telefono pesano molto: le rimpicciolisco (resta leggibile) prima di inviarle.
+async function comprimiImmagine(file) {
+  const url = URL.createObjectURL(file);
+  try {
+    const img = await new Promise((ok, ko) => {
+      const i = new Image();
+      i.onload = () => ok(i);
+      i.onerror = () => ko(new Error('Formato immagine non supportato: usa una foto JPG o PNG.'));
+      i.src = url;
+    });
+    let lato = 2200, q = 0.85, blob = null;
+    for (let t = 0; t < 5; t++) {
+      const s = Math.min(1, lato / Math.max(img.naturalWidth, img.naturalHeight));
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.naturalWidth * s);
+      c.height = Math.round(img.naturalHeight * s);
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, c.width, c.height);
+      ctx.drawImage(img, 0, 0, c.width, c.height);
+      blob = await new Promise(r => c.toBlob(r, 'image/jpeg', q));
+      if (blob && blob.size < 1.8 * 1024 * 1024) break;
+      lato *= 0.8; q -= 0.07;
+    }
+    if (!blob) throw new Error('Non riesco a preparare la foto.');
+    return blob;
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
+async function preparaFile(file) {
+  if (!file) throw new Error('Nessun file scelto.');
+  if (file.type === 'application/pdf' || /\.pdf$/i.test(file.name)) {
+    if (file.size > MAX_MB * 1024 * 1024) throw new Error(`Il PDF supera ${MAX_MB} MB.`);
+    return { mime: 'application/pdf', base64: await aBase64(file) };
+  }
+  if ((file.type || '').startsWith('image/') || /\.(jpe?g|png|heic|heif|webp)$/i.test(file.name)) {
+    return { mime: 'image/jpeg', base64: await aBase64(await comprimiImmagine(file)) };
+  }
+  throw new Error('Formato non supportato: usa una foto, un JPG, un PNG o un PDF.');
+}
+
+function b64aBlob(b64, mime) {
+  const bin = atob(b64);
+  const u = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+  return new Blob([u], { type: mime });
+}
+
+/* ---------- Visualizzatore documenti ---------- */
+async function apriDocumento(id, btn) {
+  if (btn) btn.disabled = true;
+  toast('Apro il documento…');
+  try {
+    const r = await api('apriDocumento', { id });
+    const url = URL.createObjectURL(b64aBlob(r.base64, r.mime));
+    const immagine = r.mime.startsWith('image/');
+    const pdfInterno = r.mime === 'application/pdf' && navigator.pdfViewerEnabled;
+    const scarica = `<a class="btn sec" href="${url}" download="${esc(r.nome)}">Scarica</a>`;
+    const ov = document.createElement('div');
+    ov.className = 'viewer';
+    ov.innerHTML = `<div class="vbar"><span class="vt">${esc(r.nome)}</span>${scarica}
+      <button class="btn pri" type="button" id="vchiudi">Chiudi</button></div>
+      <div class="vbody">${immagine ? `<img src="${url}" alt="${esc(r.nome)}">`
+        : pdfInterno ? `<iframe src="${url}" title="${esc(r.nome)}"></iframe>`
+        : `<div class="card empty" style="margin:16px">L'anteprima dei PDF non è disponibile qui.<br><br>
+           <a class="btn pri" href="${url}" download="${esc(r.nome)}">Scarica e apri il PDF</a></div>`}</div>`;
+    document.body.appendChild(ov);
+    document.body.style.overflow = 'hidden';
+    const tasto = e => { if (e.key === 'Escape') chiudi(); };
+    function chiudi() {
+      ov.remove();
+      document.body.style.overflow = '';
+      document.removeEventListener('keydown', tasto);
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+    }
+    document.addEventListener('keydown', tasto);
+    ov.querySelector('#vchiudi').onclick = chiudi;
+  } catch (e) {
+    toast(e.message, true);
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
 /* ---------- Dati derivati ---------- */
 const attivi = () => (S.dati?.prodotti || []).filter(p => !p['Nel cestino']);
 const nelCestino = () => (S.dati?.prodotti || []).filter(p => p['Nel cestino']);
@@ -600,7 +720,7 @@ function vHome() {
         <div style="font-size:44px">🏠</div>
         <h2 style="justify-content:center;font-size:18px">L'archivio è ancora vuoto</h2>
         <p class="muted">Aggiungi il primo acquisto importante: TV, lavatrice, caldaia…</p>
-        <a class="btn pri" href="#/nuovo">${ico('plus', 'sm')} Aggiungi un acquisto</a>
+        <a class="btn pri" href="#/nuovo">📷 Parti da una fattura</a>
       </div>`;
   }
 
@@ -626,6 +746,7 @@ function vHome() {
     <div class="row">
       <a class="pill" href="#/prodotti">${ico('box', 'sm')} ${lista.length} prodott${lista.length === 1 ? 'o' : 'i'}</a>
       <a class="pill" href="#/scadenze">${ico('shield', 'sm')} ${inScadenza.length} in scadenza</a>
+      <a class="pill" href="#/nuovo">📷 Scansiona fattura</a>
     </div>
   </section>
 
@@ -679,7 +800,7 @@ function vProdotti() {
   const opt = (v, t, sel) => `<option value="${esc(v)}" ${sel === v ? 'selected' : ''}>${esc(t)}</option>`;
 
   return `<div class="top"><h1>Prodotti</h1></div>
-  <div class="search">${ico('search')}<input id="q" type="search" placeholder="Cerca nome, marca, modello, n° di serie, negozio…" value="${esc(f.q)}" autocomplete="off"></div>
+  <div class="search">${ico('search')}<input id="q" type="search" placeholder="Cerca nome, marca, modello, n° di serie, negozio, n° fattura…" value="${esc(f.q)}" autocomplete="off"></div>
   <div class="filters">
     <select id="fcat" aria-label="Categoria">${opt('', 'Tutte le categorie', f.categoria)}${categorie.map(c => opt(c, c, f.categoria)).join('')}</select>
     <select id="fstato" aria-label="Stato">${opt('', 'Tutti gli stati', f.stato)}${STATI.map(s => opt(s, s, f.stato)).join('')}</select>
@@ -703,7 +824,7 @@ function vProdotti() {
 function filtrati() {
   const f = S.filtri;
   const parole = f.q.toLowerCase().split(/\s+/).filter(Boolean);
-  const campi = ['Nome', 'Marca', 'Modello', 'Numero di serie', 'Codice prodotto', 'Venditore', 'Categoria', 'Sottocategoria', 'Ambiente', 'Note', 'ID'];
+  const campi = ['Nome', 'Marca', 'Modello', 'Numero di serie', 'Codice prodotto', 'Numero fattura', 'Venditore', 'Categoria', 'Sottocategoria', 'Ambiente', 'Note', 'ID'];
   const min = f.min ? Number(String(f.min).replace(',', '.')) : null;
   const max = f.max ? Number(String(f.max).replace(',', '.')) : null;
   let l = attivi().filter(p => {
@@ -772,28 +893,48 @@ function vScheda(id) {
   const link = u => /^https?:\/\//i.test(String(u || '')) ? `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">Apri ↗</a>` : '';
   const g = giorniA(p['Scadenza garanzia']);
   const ga = giorniA(p['Scadenza garanzia aggiuntiva']);
-  const docs = docsDi(p['ID']);
+  const docs = docsDi(p['ID']).sort((a, b) => String(b['Caricato il']).localeCompare(String(a['Caricato il'])));
   const cestinato = !!p['Nel cestino'];
+  const idEnc = esc(p['ID']);
 
   return `<button class="back" onclick="history.length > 1 ? history.back() : (location.hash='#/prodotti')">${ico('back', 'sm')} Indietro</button>
   ${cestinato ? `<div class="card" style="background:var(--danger-soft);border-color:transparent;margin-bottom:14px">
      <strong style="color:var(--danger)">Questo prodotto è nel cestino.</strong>
-     <div class="actions" style="margin-top:10px"><button class="btn sec" data-ripristina="${esc(p['ID'])}">${ico('undo', 'sm')} Ripristina</button></div></div>` : ''}
+     <div class="actions" style="margin-top:10px"><button class="btn sec" data-ripristina="${idEnc}">${ico('undo', 'sm')} Ripristina</button></div></div>` : ''}
   <div class="card">
     <div class="det-hero"><span class="emo">${emoji(p)}</span>
       <div style="min-width:0"><h1>${esc(p['Nome'])}</h1><div class="t2">${sottotitolo(p)}</div>
-      <div class="chips" style="margin-top:8px">${chipStato(p['Stato'])}${p['Categoria'] ? `<span class="chip pri">${esc(p['Categoria'])}</span>` : ''}</div></div>
+      <div class="chips" style="margin-top:8px">${chipStato(p['Stato'])}${p['Categoria'] ? `<span class="chip pri">${esc(p['Categoria'])}</span>` : ''}${haFattura(p['ID']) ? '' : '<span class="chip warn">Manca la fattura</span>'}</div></div>
     </div>
+  </div>
+
+  <div class="sec-title">Documenti · ${docs.length}</div>
+  <div class="card">
+    ${docs.length ? `<div class="rows">${docs.map(d => `<div class="rowi">
+      <span class="emo">${/^image\//.test(d['Formato'] || '') ? '🖼️' : '📄'}</span>
+      <span class="tx"><div class="t1">${esc(d['Tipo documento'])}${num(d['Versione']) > 1 ? ' (' + esc(d['Versione']) + ')' : ''}</div>
+      <div class="t2">${fmtDataOra(d['Caricato il'])}${d['Caricato da'] ? ' · ' + esc(d['Caricato da']) : ''}${d['Dimensione (KB)'] ? ' · ' + esc(d['Dimensione (KB)']) + ' KB' : ''}</div></span>
+      <button class="btn sec" type="button" style="min-height:40px;padding:8px 14px" data-doc="${esc(d['ID'])}">Apri</button></div>`).join('')}</div>`
+      : '<div class="empty">Nessun documento collegato.</div>'}
+    ${cestinato ? '' : `<div class="adddoc">
+      <label for="dtipo" class="small muted" style="font-weight:600">Aggiungi un documento</label>
+      <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap">
+        <select id="dtipo" style="flex:1;min-width:150px">${TIPI_DOC.map(t => `<option ${t === (haFattura(p['ID']) ? 'Manuale' : 'Fattura') ? 'selected' : ''}>${t}</option>`).join('')}</select>
+        <label class="btn sec">📷<input type="file" accept="image/*" capture="environment" hidden data-carica="${idEnc}"></label>
+        <label class="btn sec">📁 File<input type="file" accept="application/pdf,image/jpeg,image/png" hidden data-carica="${idEnc}"></label>
+      </div><div id="dstato" class="small" style="margin-top:8px"></div></div>`}
   </div>
 
   <div class="sec-title">Acquisto</div>
   <div class="card">${kv([
     ['Data acquisto', p['Data acquisto'] ? fmtData(p['Data acquisto']) : ''],
     ['Negozio', esc(p['Venditore'])],
+    ['N° fattura', esc(p['Numero fattura'])],
     ['Prezzo', haValore(p['Prezzo']) ? euro(p['Prezzo']) : ''],
+    ['di cui IVA', haValore(p['IVA']) ? euro(p['IVA']) : ''],
     ['Consegna', haValore(p['Spese consegna']) ? euro(p['Spese consegna']) : ''],
     ['Installazione', haValore(p['Spese installazione']) ? euro(p['Spese installazione']) : ''],
-    ['Totale pagato', costo(p) ? `<strong>${euro(costo(p))}</strong>` : ''],
+    ['Totale speso', (haValore(p['Spese consegna']) || haValore(p['Spese installazione'])) ? `<strong>${euro(costo(p))}</strong>` : ''],
     ['Pagamento', esc(p['Pagamento'])],
     ['Acquistato da', esc(p['Acquistato da'])]
   ])}</div>
@@ -820,17 +961,24 @@ function vScheda(id) {
 
   ${p['Note'] ? `<div class="sec-title">Note</div><div class="card note">${esc(p['Note'])}</div>` : ''}
 
-  <div class="sec-title">Documenti</div>
-  <div class="card">${docs.length
-    ? `<div class="rows">${docs.map(d => `<div class="rowi"><span class="emo">📄</span><span class="tx"><div class="t1">${esc(d['Nome file'])}</div><div class="t2">${esc(d['Tipo documento'])} · ${fmtDataOra(d['Caricato il'])}</div></span></div>`).join('')}</div>`
-    : `<div class="empty">Nessun documento collegato.<br><span class="small">Il caricamento di fatture, manuali e foto arriva nel prossimo aggiornamento.</span></div>`}</div>
-
   <p class="small muted" style="margin-top:14px">Codice ${esc(p['ID'])} · creato il ${fmtDataOra(p['Creato il'])} · aggiornato il ${fmtDataOra(p['Aggiornato il'])}</p>
 
   ${cestinato ? '' : `<div class="actions">
     <a class="btn pri" style="flex:1" href="#/modifica/${encodeURIComponent(p['ID'])}">${ico('edit', 'sm')} Modifica</a>
-    <button class="btn dng" data-cestina="${esc(p['ID'])}">${ico('trash', 'sm')} Cestino</button>
+    <button class="btn dng" data-cestina="${idEnc}">${ico('trash', 'sm')} Cestino</button>
   </div>`}`;
+}
+
+function vScan() {
+  return `<div class="card scan">
+    <h2>📷 Parti dalla fattura</h2>
+    <p class="muted small" style="margin:0">Fotografala o carica il PDF: provo a leggere negozio, data, prezzo e prodotto. Poi controlli tu e salvi.</p>
+    <div class="actions" style="margin-top:12px">
+      <label class="btn pri" style="flex:1">📷 Scatta foto<input type="file" accept="image/*" capture="environment" hidden id="fcam"></label>
+      <label class="btn sec" style="flex:1">📁 Scegli file<input type="file" accept="application/pdf,image/jpeg,image/png" hidden id="ffile"></label>
+    </div>
+    <div id="scanstato"></div>
+  </div>`;
 }
 
 function vModulo(id) {
@@ -845,7 +993,7 @@ function vModulo(id) {
   const campo = (nome, tipo, opz = {}) => {
     const val = v(nome);
     const idc = 'c_' + nome.replace(/\W+/g, '_');
-    const lab = `<label for="${idc}">${esc(nome)}${opz.req ? ' <span class="req">*</span>' : ''}</label>`;
+    const lab = `<label for="${idc}">${esc(opz.label || nome)}${opz.req ? ' <span class="req">*</span>' : ''}</label>`;
     const hint = opz.hint ? `<div class="hint" id="${idc}_h">${opz.hint}</div>` : `<div class="hint" id="${idc}_h" hidden></div>`;
     const cls = opz.wide ? 'fld wide' : 'fld';
     let input;
@@ -862,43 +1010,51 @@ function vModulo(id) {
     return `<div class="${cls}">${lab}${input}${hint}</div>`;
   };
 
+  const altri = ['Sottocategoria', 'Numero di serie', 'Codice prodotto', 'Numero fattura', 'IVA', 'Spese consegna',
+    'Spese installazione', 'Pagamento', 'Ambiente', 'Data installazione', 'Garanzia aggiuntiva',
+    'Scadenza garanzia aggiuntiva', 'Link prodotto', 'Link produttore', 'Note'];
+  const apriAltri = !!p && (altri.some(k => haValore(p[k])) || (p['Stato'] && p['Stato'] !== 'In uso'));
+
   return `<button class="back" onclick="history.back()">${ico('back', 'sm')} Annulla</button>
   <div class="top"><h1>${p ? 'Modifica' : 'Nuovo acquisto'}</h1></div>
   <form id="fprod" class="form" novalidate data-rid="${uid()}">
     ${dl('dlcat', categorie)}${dl('dlsub', [])}${dl('dlamb', AMBIENTI)}${dl('dlpag', PAGAMENTI)}${dl('dlute', utenti)}
-    <div class="card"><h2>Prodotto</h2><div class="fgrid">
-      ${campo('Nome', 'text', { req: true, wide: true, ph: 'es. Lavatrice Samsung 9 kg' })}
+    ${p ? '' : vScan()}
+
+    <div class="card"><h2>${p ? 'Dati principali' : 'Controlla e completa'}</h2><div class="fgrid">
+      ${campo('Nome', 'text', { req: true, wide: true, label: 'Cos\'è', ph: 'es. Lavatrice Samsung 9 kg' })}
       ${campo('Categoria', 'text', { list: 'dlcat', ph: 'Scegli o scrivi' })}
-      ${campo('Sottocategoria', 'text', { list: 'dlsub' })}
-      ${campo('Marca', 'text')}${campo('Modello', 'text')}
-      ${campo('Numero di serie', 'text', { hint: 'Di solito è sulla targhetta, dietro o dentro lo sportello.' })}
-      ${campo('Codice prodotto', 'text')}
-      ${campo('Stato', 'stato')}
-    </div></div>
-
-    <div class="card"><h2>Acquisto</h2><div class="fgrid">
-      ${campo('Data acquisto', 'date')}${campo('Venditore', 'text', { ph: 'Negozio o sito' })}
-      ${campo('Prezzo', 'euro')}${campo('Spese consegna', 'euro')}${campo('Spese installazione', 'euro')}
-      ${campo('Pagamento', 'text', { list: 'dlpag' })}
-      ${campo('Acquistato da', 'text', { list: 'dlute' })}
-    </div></div>
-
-    <div class="card"><h2>In casa</h2><div class="fgrid">
-      ${campo('Ambiente', 'text', { list: 'dlamb', ph: 'es. Cucina' })}${campo('Data installazione', 'date')}
-    </div></div>
-
-    <div class="card"><h2>Garanzia</h2><div class="fgrid">
-      ${campo('Garanzia (mesi)', 'int', { hint: 'Copia la durata dal documento: non tutte le garanzie durano uguale.' })}
+      ${campo('Marca', 'text')}
+      ${campo('Modello', 'text')}
+      ${campo('Data acquisto', 'date')}
+      ${campo('Venditore', 'text', { label: 'Negozio', ph: 'Negozio o sito' })}
+      ${campo('Prezzo', 'euro', { label: 'Prezzo pagato' })}
+      ${campo('Garanzia (mesi)', 'int', { label: 'Garanzia (mesi)', hint: 'Copia la durata dal documento: non tutte le garanzie durano uguale.' })}
       ${campo('Scadenza garanzia', 'date')}
-      ${campo('Garanzia verificata', 'bool', { etichetta: 'Ho controllato la durata sul documento', wide: true })}
-      ${campo('Garanzia aggiuntiva', 'text', { ph: 'es. Estensione 5 anni del negozio' })}
-      ${campo('Scadenza garanzia aggiuntiva', 'date')}
+      ${campo('Garanzia verificata', 'bool', { etichetta: 'Ho controllato la garanzia sul documento', wide: true })}
     </div></div>
 
-    <div class="card"><h2>Link e note</h2><div class="fgrid">
-      ${campo('Link prodotto', 'url')}${campo('Link produttore', 'url')}
-      ${campo('Note', 'area', { wide: true })}
-    </div></div>
+    <details class="card altri" id="altri" ${apriAltri ? 'open' : ''}>
+      <summary><span>Altri dettagli</span><span class="muted small">facoltativi ▾</span></summary>
+      <div class="fgrid" style="margin-top:14px">
+        ${campo('Sottocategoria', 'text', { list: 'dlsub' })}
+        ${campo('Stato', 'stato')}
+        ${campo('Numero di serie', 'text', { hint: 'Di solito è sulla targhetta, dietro o dentro lo sportello.' })}
+        ${campo('Codice prodotto', 'text')}
+        ${campo('Numero fattura', 'text')}
+        ${campo('IVA', 'euro', { label: 'di cui IVA' })}
+        ${campo('Spese consegna', 'euro')}
+        ${campo('Spese installazione', 'euro')}
+        ${campo('Pagamento', 'text', { list: 'dlpag' })}
+        ${campo('Acquistato da', 'text', { list: 'dlute' })}
+        ${campo('Ambiente', 'text', { list: 'dlamb', label: 'Dove si trova', ph: 'es. Cucina' })}
+        ${campo('Data installazione', 'date')}
+        ${campo('Garanzia aggiuntiva', 'text', { ph: 'es. Estensione 5 anni del negozio' })}
+        ${campo('Scadenza garanzia aggiuntiva', 'date')}
+        ${campo('Link prodotto', 'url')}${campo('Link produttore', 'url')}
+        ${campo('Note', 'area', { wide: true })}
+      </div>
+    </details>
 
     <div class="err" id="ferr"></div>
     <div class="savebar"><button type="submit" class="btn pri full" id="bsalva">${p ? 'Salva modifiche' : 'Salva acquisto'}</button></div>
@@ -983,6 +1139,7 @@ function bind(r) {
   });
 
   if (r.p === 'prodotti') bindProdotti();
+  if (r.p === 'prodotto') bindDocumenti();
   if (r.p === 'nuovo' || r.p === 'modifica') bindModulo(r.p === 'modifica' ? r.id : '');
   if (r.p === 'altro') {
     $('#tema').onchange = e => { mem.set('hv_tema', e.target.value); applicaTema(); };
@@ -1008,14 +1165,46 @@ function bindProdotti() {
   aggiornaLista();
 }
 
+function bindDocumenti() {
+  $$('[data-doc]').forEach(b => b.onclick = () => apriDocumento(b.dataset.doc, b));
+  $$('[data-carica]').forEach(inp => inp.onchange = async () => {
+    const file = inp.files[0];
+    inp.value = '';
+    if (!file) return;
+    const stato = $('#dstato');
+    const tipo = $('#dtipo').value;
+    $$('[data-carica]').forEach(i => { i.disabled = true; });
+    stato.innerHTML = '<span class="scanning"><span class="spin"></span> Carico il documento…</span>';
+    try {
+      const f = await preparaFile(file);
+      await apiSicura('caricaDocumento', { idProdotto: inp.dataset.carica, tipo, file: f, richiestaId: uid() });
+      await carica();
+      toast(tipo + ' aggiunto ✓');
+      render(true);
+    } catch (e) {
+      stato.innerHTML = `<span style="color:var(--danger)">${esc(e.message)}</span>`;
+      $$('[data-carica]').forEach(i => { i.disabled = false; });
+    }
+  });
+}
+
 function bindModulo(id) {
   const form = $('#fprod');
   const el = nome => form.querySelector(`[data-campo="${nome}"]`);
-  const cat = el('Categoria'), sub = el('Sottocategoria');
+  const cat = el('Categoria');
   const acquisto = el('Data acquisto'), mesi = el('Garanzia (mesi)'), scad = el('Scadenza garanzia');
   const hintScad = $('#' + scad.id + '_h');
 
   if (!id) el('Acquistato da').value = S.utente;
+
+  const segna = (nome, testo) => {
+    const i = el(nome);
+    if (!i) return;
+    const h = $('#' + i.id + '_h');
+    if (h) { h.hidden = false; h.className = 'hint auto'; h.textContent = testo; }
+    i.classList.add('dafattura');
+  };
+  $$('[data-campo]', form).forEach(i => i.addEventListener('input', () => i.classList.remove('dafattura')));
 
   const aggiornaSotto = () => {
     const l = (S.dati.categorie || []).filter(c => c['Categoria'] === cat.value && c['Sottocategoria']).map(c => c['Sottocategoria']);
@@ -1038,6 +1227,60 @@ function bindModulo(id) {
   mesi.addEventListener('input', suggerisci);
   scad.addEventListener('input', () => { scad.dataset.auto = scad.value ? '0' : '1'; hintScad.hidden = true; });
 
+  // ----- Fattura: foto o PDF -----
+  const stato = $('#scanstato');
+  const ingressi = () => $$('#fcam, #ffile');
+  const leggi = async file => {
+    if (!file) return;
+    ingressi().forEach(i => { i.disabled = true; });
+    stato.innerHTML = '<div class="scanning"><span class="spin"></span> Leggo la fattura… può volerci fino a mezzo minuto</div>';
+    try {
+      const f = await preparaFile(file);
+      const r = await apiSicura('leggiFattura', { file: f, richiestaId: uid() });
+      form.dataset.fileId = r.fileId;
+
+      let n = 0;
+      Object.entries(r.estratti || {}).forEach(([k, val]) => {
+        const i = el(k);
+        if (!i || i.type === 'checkbox' || i.value.trim()) return;
+        i.value = CAMPI_EURO.includes(k) ? euroCampo(val) : String(val);
+        segna(k, '📄 Letto dalla fattura: controlla che sia giusto.');
+        if (i.closest('#altri')) $('#altri').open = true;
+        n++;
+      });
+      if ((r.estratti || {})['Categoria']) aggiornaSotto();
+      suggerisci();
+
+      stato.innerHTML = `
+        <div class="okdoc">✅ Fattura allegata
+          <select id="stipo" aria-label="Tipo di documento"><option>Fattura</option><option>Scontrino</option></select>
+          <button type="button" class="btn sec" id="stogli" style="min-height:40px;padding:6px 12px">Togli</button></div>
+        <p class="small" style="margin:8px 0 0">${n
+          ? `Ho compilato ${n} camp${n === 1 ? 'o' : 'i'} (in giallo): controllali prima di salvare.`
+          : 'Non ho trovato dati sicuri da compilare: inseriscili tu, la fattura resta comunque allegata.'}</p>
+        ${r.avviso ? `<p class="small" style="color:var(--warn);margin:6px 0 0">${esc(r.avviso)}</p>` : ''}
+        ${(r.righe || []).length ? `<details class="more-f"><summary>Testo letto · tocca una riga per usarla come nome</summary>
+          <div class="chips" style="margin-top:8px">${r.righe.map(x => `<button type="button" class="chip linechip" data-riga="${esc(x)}">${esc(x)}</button>`).join('')}</div></details>` : ''}`;
+
+      $$('[data-riga]', stato).forEach(b => b.onclick = () => {
+        const i = el('Nome');
+        i.value = b.dataset.riga;
+        segna('Nome', 'Preso dal testo della fattura.');
+        i.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      });
+      $('#stogli').onclick = () => {
+        delete form.dataset.fileId;
+        stato.innerHTML = '<p class="small muted" style="margin:10px 0 0">Fattura tolta. I campi già compilati restano: puoi correggerli.</p>';
+        ingressi().forEach(i => { i.disabled = false; });
+      };
+    } catch (e) {
+      stato.innerHTML = `<p class="small" style="color:var(--danger);margin:10px 0 0">${esc(e.message)}</p>`;
+      ingressi().forEach(i => { i.disabled = false; });
+    }
+  };
+  ingressi().forEach(i => i.onchange = () => { const f = i.files[0]; i.value = ''; leggi(f); });
+
+  // ----- Salvataggio -----
   form.addEventListener('submit', async e => {
     e.preventDefault();
     const err = $('#ferr'), btn = $('#bsalva');
@@ -1045,22 +1288,29 @@ function bindModulo(id) {
     const dati = {};
     $$('[data-campo]', form).forEach(i => { dati[i.dataset.campo] = i.type === 'checkbox' ? i.checked : i.value.trim(); });
 
-    if (!dati['Nome']) { err.textContent = 'Scrivi il nome del prodotto.'; el('Nome').focus(); return; }
-    for (const k of ['Prezzo', 'Spese consegna', 'Spese installazione']) {
-      const s = dati[k].replace(/\s|€/g, '');
+    const sbaglio = (msg, campoErr) => {
+      err.textContent = msg;
+      const i = el(campoErr);
+      if (i) { if (i.closest('#altri')) $('#altri').open = true; i.focus(); }
+    };
+    if (!dati['Nome']) return sbaglio('Scrivi cos\'è il prodotto.', 'Nome');
+    for (const k of CAMPI_EURO) {
+      const s = String(dati[k] || '').replace(/\s|€/g, '');
       const n = Number(s.includes(',') ? s.replace(/\./g, '').replace(',', '.') : s);
-      if (s && (!isFinite(n) || n < 0)) { err.textContent = `Controlla l'importo in "${k}".`; el(k).focus(); return; }
+      if (s && (!isFinite(n) || n < 0)) return sbaglio(`Controlla l'importo in "${k}".`, k);
     }
     for (const k of ['Link prodotto', 'Link produttore']) {
-      if (dati[k] && !/^https?:\/\/\S+$/i.test(dati[k])) { err.textContent = `Il link in "${k}" deve iniziare con https://`; el(k).focus(); return; }
+      if (dati[k] && !/^https?:\/\/\S+$/i.test(dati[k])) return sbaglio(`Il link in "${k}" deve iniziare con https://`, k);
     }
     if (id) dati.ID = id;
+    const documento = form.dataset.fileId ? { fileId: form.dataset.fileId, tipo: ($('#stipo') || {}).value || 'Fattura' } : null;
 
     btn.disabled = true; btn.textContent = 'Salvataggio…';
     try {
-      const r = await apiSicura('salvaProdotto', { prodotto: dati, richiestaId: form.dataset.rid });
+      const r = await apiSicura('salvaProdotto', { prodotto: dati, documento, richiestaId: form.dataset.rid });
       await carica();
-      toast(id ? 'Modifiche salvate ✓' : 'Acquisto salvato ✓');
+      if (r.avviso) toast(r.avviso, true);
+      else toast(id ? 'Modifiche salvate ✓' : 'Acquisto salvato ✓');
       location.replace('#/prodotto/' + encodeURIComponent(r.id));
     } catch (e2) {
       err.textContent = e2.message;

@@ -1,6 +1,6 @@
 // Home Vault — service worker
 // Salva solo la "scocca" dell'app per aprirla veloce. I dati non vengono mai salvati qui.
-const CACHE = 'homevault-v2';
+const CACHE = 'homevault-v3';
 const FILE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
