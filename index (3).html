@@ -1,0 +1,1082 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Home Vault</title>
+<meta name="theme-color" content="#4f46e5">
+<meta name="robots" content="noindex, nofollow">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root {
+  --bg: #f4f5fb;
+  --surface: #ffffff;
+  --surface-2: #f0f1f8;
+  --text: #171a2c;
+  --muted: #6a6f88;
+  --border: #e3e5f0;
+  --primary: #4f46e5;
+  --primary-2: #7c3aed;
+  --primary-soft: #eceafe;
+  --ok: #0f9d6b;
+  --ok-soft: #e1f6ee;
+  --warn: #c27803;
+  --warn-soft: #fdf2dc;
+  --danger: #d6334c;
+  --danger-soft: #fde7ea;
+  --shadow: 0 1px 2px rgba(23,26,44,.05), 0 6px 20px rgba(23,26,44,.06);
+  --radius: 18px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1020; --surface: #171a2e; --surface-2: #20243b; --text: #eceefb;
+    --muted: #9ba0bd; --border: #2a2f4a; --primary: #8b84ff; --primary-2: #b18cff;
+    --primary-soft: #262650; --ok: #3ad29a; --ok-soft: #123a2c; --warn: #f2b84b;
+    --warn-soft: #3b2f13; --danger: #ff6f86; --danger-soft: #3d1a22;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1020; --surface: #171a2e; --surface-2: #20243b; --text: #eceefb;
+  --muted: #9ba0bd; --border: #2a2f4a; --primary: #8b84ff; --primary-2: #b18cff;
+  --primary-soft: #262650; --ok: #3ad29a; --ok-soft: #123a2c; --warn: #f2b84b;
+  --warn-soft: #3b2f13; --danger: #ff6f86; --danger-soft: #3d1a22;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--text);
+  font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  min-height: 100vh; padding-bottom: calc(96px + env(safe-area-inset-bottom));
+}
+a { color: inherit; text-decoration: none; }
+button, input, select, textarea { font: inherit; color: inherit; }
+.wrap { max-width: 960px; margin: 0 auto; padding: 16px; }
+.ico { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.ico.sm { width: 18px; height: 18px; }
+
+/* Intestazione */
+.top { display: flex; align-items: center; gap: 12px; margin: 4px 0 16px; }
+.top h1 { font-size: 26px; margin: 0; letter-spacing: -.02em; flex: 1; }
+.top .sub { color: var(--muted); font-size: 14px; }
+.icon-btn {
+  width: 42px; height: 42px; border-radius: 14px; border: 1px solid var(--border);
+  background: var(--surface); display: grid; place-items: center; cursor: pointer;
+}
+.icon-btn:active { transform: scale(.96); }
+.hero {
+  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  color: #fff; border-radius: 24px; padding: 20px; box-shadow: var(--shadow); margin-bottom: 16px;
+}
+.hero .ciao { opacity: .85; font-size: 14px; }
+.hero h1 { margin: 2px 0 14px; font-size: 26px; letter-spacing: -.02em; }
+.hero .row { display: flex; gap: 10px; flex-wrap: wrap; }
+.hero .pill {
+  background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.22);
+  border-radius: 999px; padding: 8px 14px; font-weight: 600; font-size: 14px; display: inline-flex; gap: 8px; align-items: center;
+}
+
+/* Card e griglie */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
+.card + .card, .card + .grid, .grid + .card, .grid + .grid { margin-top: 14px; }
+.card h2 { font-size: 16px; margin: 0 0 12px; display: flex; align-items: center; gap: 8px; }
+.card h2 .more { margin-left: auto; font-size: 13px; color: var(--primary); font-weight: 600; }
+.grid { display: grid; gap: 14px; }
+.kpis { grid-template-columns: repeat(2, 1fr); }
+@media (min-width: 720px) { .kpis { grid-template-columns: repeat(4, 1fr); } .two { grid-template-columns: 1fr 1fr; } }
+.kpi .lbl { color: var(--muted); font-size: 13px; }
+.kpi .val { font-size: 22px; font-weight: 700; letter-spacing: -.02em; margin-top: 4px; }
+.kpi.alert .val { color: var(--warn); }
+
+/* Barre grafico */
+.bars { display: grid; gap: 10px; }
+.bar { display: grid; grid-template-columns: 96px 1fr auto; gap: 10px; align-items: center; font-size: 14px; }
+.bar .nm { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar .tr { height: 10px; border-radius: 99px; background: var(--surface-2); overflow: hidden; }
+.bar .fl { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--primary), var(--primary-2)); transition: width .5s ease; }
+.bar .am { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* Elenchi */
+.rows { display: grid; }
+.rowi { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--border); }
+.rowi:first-child { border-top: 0; padding-top: 0; }
+.rowi:last-child { padding-bottom: 0; }
+.rowi .tx { flex: 1; min-width: 0; }
+.rowi .t1 { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rowi .t2 { color: var(--muted); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.emo { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; font-size: 22px; background: var(--primary-soft); flex: none; }
+.chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 99px; font-size: 12px; font-weight: 600; background: var(--surface-2); color: var(--muted); white-space: nowrap; }
+.chip.ok { background: var(--ok-soft); color: var(--ok); }
+.chip.warn { background: var(--warn-soft); color: var(--warn); }
+.chip.danger { background: var(--danger-soft); color: var(--danger); }
+.chip.pri { background: var(--primary-soft); color: var(--primary); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.empty { text-align: center; color: var(--muted); padding: 18px 8px; font-size: 14px; }
+
+/* Prodotti */
+.search { position: relative; }
+.search .ico { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); }
+.search input { padding-left: 44px; }
+.filters { display: flex; gap: 8px; overflow-x: auto; padding: 12px 0 4px; scrollbar-width: none; }
+.filters::-webkit-scrollbar { display: none; }
+.filters select { width: auto; min-width: 0; flex: none; padding: 8px 12px; border-radius: 99px; font-size: 14px; }
+.toolbar { display: flex; align-items: center; justify-content: space-between; margin: 10px 0 12px; color: var(--muted); font-size: 14px; }
+.seg { display: inline-flex; background: var(--surface-2); border-radius: 12px; padding: 3px; }
+.seg button { border: 0; background: none; padding: 6px 10px; border-radius: 9px; cursor: pointer; color: var(--muted); display: grid; place-items: center; }
+.seg button.on { background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
+.cards { display: grid; gap: 12px; grid-template-columns: repeat(2, 1fr); }
+@media (min-width: 720px) { .cards { grid-template-columns: repeat(3, 1fr); } }
+.pcard { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 8px; min-width: 0; transition: transform .15s; }
+.pcard:active { transform: scale(.98); }
+.pcard .t1 { font-weight: 700; line-height: 1.25; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.pcard .t2 { color: var(--muted); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pcard .pr { font-weight: 700; margin-top: auto; }
+.list .rowi { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 12px; margin-bottom: 8px; box-shadow: var(--shadow); }
+.list .rowi:first-child { padding-top: 12px; }
+details.more-f { margin-top: 4px; }
+details.more-f summary { cursor: pointer; color: var(--primary); font-size: 14px; font-weight: 600; list-style: none; padding: 4px 0; }
+details.more-f summary::-webkit-details-marker { display: none; }
+
+/* Scheda */
+.back { display: inline-flex; align-items: center; gap: 4px; color: var(--muted); font-weight: 600; margin-bottom: 10px; cursor: pointer; background: none; border: 0; padding: 4px 0; }
+.det-hero { display: flex; gap: 14px; align-items: center; }
+.det-hero .emo { width: 64px; height: 64px; font-size: 32px; border-radius: 20px; }
+.det-hero h1 { margin: 0; font-size: 22px; line-height: 1.2; letter-spacing: -.01em; }
+.det-hero .t2 { color: var(--muted); }
+dl.kv { display: grid; grid-template-columns: minmax(110px, 40%) 1fr; gap: 10px 12px; margin: 0; font-size: 15px; }
+dl.kv dt { color: var(--muted); }
+dl.kv dd { margin: 0; overflow-wrap: anywhere; }
+dl.kv dd a { color: var(--primary); font-weight: 600; }
+.note { white-space: pre-wrap; }
+.actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+
+/* Bottoni e campi */
+.btn {
+  border: 0; border-radius: 14px; padding: 12px 18px; font-weight: 700; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px;
+}
+.btn:disabled { opacity: .6; cursor: default; }
+.btn.pri { background: linear-gradient(135deg, var(--primary), var(--primary-2)); color: #fff; }
+.btn.sec { background: var(--surface-2); color: var(--text); }
+.btn.dng { background: var(--danger-soft); color: var(--danger); }
+.btn.full { width: 100%; }
+input, select, textarea {
+  width: 100%; border: 1px solid var(--border); background: var(--surface); border-radius: 14px;
+  padding: 12px 14px; outline: none; min-height: 48px;
+}
+textarea { min-height: 96px; resize: vertical; }
+input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
+.form { display: grid; gap: 14px; }
+.fld label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+.fld .hint { font-size: 12px; color: var(--muted); margin-top: 5px; }
+.fld .hint.auto { color: var(--warn); }
+.fgrid { display: grid; gap: 14px; }
+@media (min-width: 720px) { .fgrid { grid-template-columns: 1fr 1fr; } .fgrid .wide { grid-column: 1 / -1; } }
+.check { display: flex; align-items: center; gap: 10px; font-weight: 600; min-height: 48px; }
+.check input { width: 22px; height: 22px; min-height: 0; accent-color: var(--primary); }
+.req { color: var(--danger); }
+.savebar {
+  position: sticky; bottom: calc(84px + env(safe-area-inset-bottom)); z-index: 5;
+  background: var(--bg); padding: 10px 0; display: flex; gap: 10px;
+}
+
+/* Login */
+.login { min-height: 100vh; display: grid; place-items: center; padding: 24px 16px; }
+.login .box { width: 100%; max-width: 380px; }
+.logo { width: 76px; height: 76px; border-radius: 24px; margin: 0 auto 16px; display: grid; place-items: center; background: linear-gradient(135deg, var(--primary), var(--primary-2)); color: #fff; box-shadow: var(--shadow); }
+.logo .ico { width: 38px; height: 38px; }
+.login h1 { text-align: center; margin: 0 0 4px; font-size: 28px; letter-spacing: -.02em; }
+.login p.s { text-align: center; color: var(--muted); margin: 0 0 24px; }
+.err { color: var(--danger); font-size: 14px; font-weight: 600; min-height: 20px; }
+
+/* Navigazione */
+nav.bottom {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border);
+  padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+}
+nav.bottom .in { max-width: 560px; margin: 0 auto; display: grid; grid-template-columns: repeat(5, 1fr); align-items: center; }
+nav.bottom a { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 11px; color: var(--muted); font-weight: 600; padding: 4px 0; }
+nav.bottom a.on { color: var(--primary); }
+nav.bottom a.fab {
+  width: 56px; height: 56px; border-radius: 18px; margin: -22px auto 0;
+  background: linear-gradient(135deg, var(--primary), var(--primary-2)); color: #fff; justify-content: center;
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--primary) 40%, transparent);
+}
+nav.bottom a.fab .ico { width: 28px; height: 28px; }
+
+/* Varie */
+.toast {
+  position: fixed; left: 50%; bottom: calc(100px + env(safe-area-inset-bottom)); transform: translateX(-50%) translateY(20px);
+  background: var(--text); color: var(--bg); padding: 12px 18px; border-radius: 14px; font-weight: 600; font-size: 14px;
+  opacity: 0; pointer-events: none; transition: .25s; z-index: 50; max-width: calc(100% - 32px); text-align: center;
+}
+.toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.err { background: var(--danger); color: #fff; }
+.skel { background: linear-gradient(90deg, var(--surface-2), var(--surface), var(--surface-2)); background-size: 200% 100%; animation: sk 1.2s infinite; border-radius: var(--radius); }
+@keyframes sk { to { background-position: -200% 0; } }
+.fade { animation: fd .25s ease; }
+@keyframes fd { from { opacity: 0; transform: translateY(6px); } }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+.sec-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 22px 0 10px; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<main id="app"></main>
+<nav class="bottom" id="nav" hidden>
+  <div class="in">
+    <a href="#/home" data-nav="home"><span data-i="home"></span>Home</a>
+    <a href="#/prodotti" data-nav="prodotti"><span data-i="box"></span>Prodotti</a>
+    <a href="#/nuovo" class="fab" aria-label="Aggiungi acquisto"><span data-i="plus"></span></a>
+    <a href="#/scadenze" data-nav="scadenze"><span data-i="shield"></span>Garanzie</a>
+    <a href="#/altro" data-nav="altro"><span data-i="dots"></span>Altro</a>
+  </div>
+</nav>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+'use strict';
+/* =========================================================
+   CONFIGURAZIONE: incolla qui l'URL della web app di Apps Script
+   (finisce con /exec). Non è un segreto: senza PIN non apre nulla.
+   ========================================================= */
+const API_URL = 'https://script.google.com/macros/s/AKfycbxdj3IFzUgoMA3PLSxcetu9Q_yqGX2kvQlXXsqEg4Z_WU0d80_XHhrQnap_DK02Ehxo/exec';
+const VERSIONE = '2.0';
+
+const STATI = ['In uso', 'In riparazione', 'Sostituito', 'Venduto', 'Dismesso'];
+const AMBIENTI = ['Cucina', 'Soggiorno', 'Camera da letto', 'Cameretta', 'Bagno', 'Lavanderia', 'Studio', 'Taverna', 'Garage', 'Esterno'];
+const PAGAMENTI = ['Contanti', 'Carta di credito', 'Bancomat', 'Bonifico', 'PayPal', 'Finanziamento'];
+
+/* ---------- Archivio locale (solo preferenze, mai i dati) ---------- */
+const mem = {
+  get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
+  del(k) { try { localStorage.removeItem(k); } catch (e) {} }
+};
+
+const S = {
+  token: mem.get('hv_token'),
+  utente: mem.get('hv_utente') || '',
+  dati: null,
+  caricando: false,
+  vista: mem.get('hv_vista') || 'schede',
+  filtri: { q: '', categoria: '', stato: '', anno: '', min: '', max: '', ordine: 'data-desc' },
+  ultimaRotta: ''
+};
+
+/* ---------- Utilità ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ESC[c]);
+const fmtEuroI = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' });
+const fmtEuro0 = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+const euro = n => fmtEuroI.format(Number(n) || 0);
+const euroTondo = n => fmtEuro0.format(Number(n) || 0);
+const num = v => { const n = Number(v); return v === '' || v === null || !isFinite(n) ? 0 : n; };
+const haValore = v => v !== '' && v !== null && v !== undefined;
+
+function parseData(s) {
+  const m = String(s || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
+  return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null;
+}
+function isoData(d) {
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function fmtData(s) {
+  const d = parseData(s);
+  return d ? d.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '—';
+}
+function fmtDataOra(s) {
+  if (!s) return '';
+  const d = new Date(s);
+  return isNaN(d) ? '' : d.toLocaleString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+function oggi() { const d = new Date(); d.setHours(0, 0, 0, 0); return d; }
+function giorniA(s) { const d = parseData(s); return d ? Math.round((d - oggi()) / 864e5) : null; }
+function aggiungiMesi(s, mesi) {
+  const d = parseData(s);
+  if (!d || !mesi) return '';
+  const r = new Date(d.getFullYear(), d.getMonth() + Number(mesi), d.getDate());
+  if (r.getDate() !== d.getDate()) r.setDate(0); // es. 31 gennaio + 1 mese → 28/29 febbraio
+  return isoData(r);
+}
+function uid() {
+  return (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
+    : Date.now().toString(36) + Math.random().toString(36).slice(2, 12);
+}
+const costo = p => num(p['Prezzo']) + num(p['Spese consegna']) + num(p['Spese installazione']);
+const euroCampo = v => haValore(v) ? String(v).replace('.', ',') : '';
+
+const ICONE = {
+  home: '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  box: '<path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="m3 8 9 5 9-5M12 13v8"/>',
+  shield: '<path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/>',
+  dots: '<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  grid: '<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>',
+  list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+  back: '<path d="m15 18-6-6 6-6"/>',
+  edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  trash: '<path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/>',
+  refresh: '<path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/>',
+  doc: '<path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5"/>',
+  undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>',
+  out: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/>',
+  lock: '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  alert: '<path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>'
+};
+const ico = (n, cls = '') => `<svg class="ico ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONE[n] || ''}</svg>`;
+
+function emoji(p) {
+  const c = String((p && (p['Categoria'] + ' ' + p['Sottocategoria'])) || '').toLowerCase();
+  const mappa = [
+    [/tv|televis|audio|soundbar/, '📺'], [/frigo|congel|freddo/, '🧊'], [/lav|asciug/, '🫧'],
+    [/forno|cottura|microonde|cucina/, '🍳'], [/caldaia|clima|pompa|riscald/, '🌡️'],
+    [/computer|tablet|elettron|telefono|pc/, '💻'], [/materasso/, '🛏️'], [/mobil|arredo|divano/, '🛋️'],
+    [/piccoli|elettrodom/, '🔌']
+  ];
+  for (const [re, e] of mappa) if (re.test(c)) return e;
+  return '📦';
+}
+
+function toast(msg, errore = false) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.className = 'toast on' + (errore ? ' err' : '');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => { t.className = 'toast' + (errore ? ' err' : ''); }, errore ? 4500 : 2500);
+}
+
+/* ---------- Tema ---------- */
+function applicaTema() {
+  const t = mem.get('hv_tema') || 'auto';
+  if (t === 'auto') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', t);
+}
+
+/* ---------- Comunicazione col server ---------- */
+async function api(azione, extra = {}) {
+  if (!/^https:\/\//.test(API_URL)) throw new Error("Manca l'indirizzo del server: va inserito in index.html (API_URL).");
+  let r;
+  try {
+    r = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(Object.assign({ azione, token: S.token }, extra)),
+      redirect: 'follow'
+    });
+  } catch (e) {
+    const err = new Error('Connessione assente o server non raggiungibile.');
+    err.rete = true;
+    throw err;
+  }
+  let j;
+  try { j = await r.json(); } catch (e) { throw new Error('Il server ha risposto in modo strano: controlla la pubblicazione dello script.'); }
+  if (!j.ok) {
+    if (j.codice === 'SESSIONE') { esci(false); toast(j.errore, true); }
+    const err = new Error(j.errore || 'Errore sconosciuto.');
+    err.codice = j.codice;
+    throw err;
+  }
+  return j;
+}
+
+// Per le scritture: ritenta in caso di rete instabile, con lo stesso codice richiesta (niente doppioni).
+async function apiSicura(azione, extra) {
+  let ultimo;
+  for (let i = 0; i < 3; i++) {
+    try { return await api(azione, extra); }
+    catch (e) {
+      ultimo = e;
+      if (!e.rete) throw e;
+      await new Promise(r => setTimeout(r, 1200 * (i + 1)));
+    }
+  }
+  throw ultimo;
+}
+
+async function carica() {
+  S.caricando = true;
+  try {
+    const d = await api('dati');
+    S.dati = d;
+    if (d.utente) { S.utente = d.utente; mem.set('hv_utente', d.utente); }
+  } catch (e) {
+    S.caricando = false;
+    if (S.token) $('#app').innerHTML = vErrore(e.message);
+    return false;
+  }
+  S.caricando = false;
+  return true;
+}
+
+async function ricarica() {
+  const ok = await carica();
+  if (ok) render(true);
+  return ok;
+}
+
+function esci(avvisaServer = true) {
+  if (avvisaServer && S.token) api('logout').catch(() => {});
+  S.token = null; S.dati = null;
+  mem.del('hv_token');
+  location.hash = '#/home';
+  render();
+}
+
+/* ---------- Dati derivati ---------- */
+const attivi = () => (S.dati?.prodotti || []).filter(p => !p['Nel cestino']);
+const nelCestino = () => (S.dati?.prodotti || []).filter(p => p['Nel cestino']);
+const trova = id => (S.dati?.prodotti || []).find(p => String(p['ID']) === String(id));
+const docsDi = id => (S.dati?.documenti || []).filter(d => String(d['ID prodotto']) === String(id) && d['Attivo'] !== false);
+const haFattura = id => docsDi(id).some(d => ['Fattura', 'Scontrino'].includes(d['Tipo documento']));
+const ancoraInCasa = p => !['Venduto', 'Dismesso', 'Sostituito'].includes(p['Stato']);
+
+function scadenze() {
+  const out = [];
+  attivi().filter(ancoraInCasa).forEach(p => {
+    [['Scadenza garanzia', 'Garanzia'], ['Scadenza garanzia aggiuntiva', 'Garanzia aggiuntiva']].forEach(([campo, tipo]) => {
+      if (!p[campo]) return;
+      out.push({ p, tipo, data: p[campo], giorni: giorniA(p[campo]), verificata: tipo === 'Garanzia' ? !!p['Garanzia verificata'] : true });
+    });
+  });
+  return out.sort((a, b) => a.giorni - b.giorni);
+}
+
+function mancanze(p) {
+  const m = [];
+  if (!haFattura(p['ID'])) m.push('fattura');
+  if (!p['Data acquisto']) m.push('data acquisto');
+  if (!haValore(p['Prezzo'])) m.push('prezzo');
+  if (!p['Scadenza garanzia'] && !haValore(p['Garanzia (mesi)'])) m.push('garanzia');
+  return m;
+}
+
+function chipStato(s) {
+  const cls = { 'In uso': 'ok', 'In riparazione': 'warn', 'Venduto': '', 'Dismesso': '', 'Sostituito': '' }[s] ?? '';
+  return `<span class="chip ${cls}">${esc(s || 'In uso')}</span>`;
+}
+function chipGiorni(g) {
+  if (g === null) return '';
+  if (g < 0) return `<span class="chip danger">Scaduta</span>`;
+  if (g === 0) return `<span class="chip danger">Scade oggi</span>`;
+  if (g <= 30) return `<span class="chip warn">${g} gg</span>`;
+  if (g <= 90) return `<span class="chip pri">${g} gg</span>`;
+  return `<span class="chip ok">Attiva</span>`;
+}
+function sottotitolo(p) {
+  return [p['Marca'], p['Modello']].filter(Boolean).map(esc).join(' · ') || esc(p['Categoria'] || 'Senza categoria');
+}
+
+/* ---------- Router ---------- */
+function rotta() {
+  const h = location.hash.replace(/^#\/?/, '');
+  const i = h.indexOf('/');
+  return i === -1 ? { p: h || 'home', id: '' } : { p: h.slice(0, i), id: decodeURIComponent(h.slice(i + 1)) };
+}
+window.addEventListener('hashchange', () => render());
+
+function render(mantieniScroll = false) {
+  const app = $('#app');
+  if (!S.token) {
+    $('#nav').hidden = true;
+    app.innerHTML = vLogin();
+    bindLogin();
+    return;
+  }
+  $('#nav').hidden = false;
+  const r = rotta();
+  $$('#nav [data-nav]').forEach(a => a.classList.toggle('on', a.dataset.nav === r.p || (r.p === 'prodotto' && a.dataset.nav === 'prodotti')));
+
+  if (!S.dati) {
+    app.innerHTML = vCaricamento();
+    if (!S.caricando) carica().then(ok => { if (ok) render(); });
+    return;
+  }
+
+  const viste = { home: vHome, prodotti: vProdotti, prodotto: vScheda, nuovo: vModulo, modifica: vModulo, scadenze: vScadenze, altro: vAltro };
+  const vista = viste[r.p] || vHome;
+  app.innerHTML = `<div class="wrap fade">${vista(r.p === 'nuovo' ? '' : r.id)}</div>`;
+  bind(r);
+  const chiave = r.p + '/' + r.id;
+  if (!mantieniScroll && chiave !== S.ultimaRotta) window.scrollTo(0, 0);
+  S.ultimaRotta = chiave;
+}
+
+/* ---------- Viste ---------- */
+function vLogin() {
+  const nomi = ['Federico', 'Mamma'];
+  return `<div class="login fade"><form class="box" id="flogin" autocomplete="off">
+    <div class="logo">${ico('lock')}</div>
+    <h1>Home Vault</h1>
+    <p class="s">L'archivio di casa: acquisti, fatture e garanzie</p>
+    <div class="form">
+      <div class="fld"><label for="lnome">Chi sei?</label>
+        <input id="lnome" list="lnomi" maxlength="40" required value="${esc(S.utente)}" placeholder="Il tuo nome">
+        <datalist id="lnomi">${nomi.map(n => `<option value="${n}">`).join('')}</datalist></div>
+      <div class="fld"><label for="lpin">PIN di famiglia</label>
+        <input id="lpin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" required placeholder="••••••" autocomplete="off"></div>
+      <div class="err" id="lerr"></div>
+      <button class="btn pri full" id="lbtn">Entra</button>
+    </div>
+  </form></div>`;
+}
+
+function bindLogin() {
+  $('#flogin').addEventListener('submit', async e => {
+    e.preventDefault();
+    const nome = $('#lnome').value.trim(), pin = $('#lpin').value.trim(), btn = $('#lbtn');
+    $('#lerr').textContent = '';
+    if (!/^\d{6,8}$/.test(pin)) { $('#lerr').textContent = 'Il PIN ha da 6 a 8 cifre.'; return; }
+    btn.disabled = true; btn.textContent = 'Verifica…';
+    try {
+      const r = await api('login', { pin, utente: nome });
+      S.token = r.token; S.utente = r.utente;
+      mem.set('hv_token', r.token); mem.set('hv_utente', r.utente);
+      if (!location.hash) location.hash = '#/home';
+      render();
+    } catch (err) {
+      $('#lerr').textContent = err.message;
+      btn.disabled = false; btn.textContent = 'Entra';
+      $('#lpin').value = ''; $('#lpin').focus();
+    }
+  });
+}
+
+function vCaricamento() {
+  return `<div class="wrap"><div class="skel" style="height:150px;margin-bottom:16px"></div>
+    <div class="grid kpis">${'<div class="skel" style="height:84px"></div>'.repeat(4)}</div>
+    <div class="skel" style="height:220px;margin-top:14px"></div></div>`;
+}
+
+function vErrore(msg) {
+  return `<div class="wrap"><div class="card" style="text-align:center">
+    <div style="color:var(--danger);margin-bottom:8px">${ico('alert')}</div>
+    <h2 style="justify-content:center">Non riesco a caricare i dati</h2>
+    <p class="muted">${esc(msg)}</p>
+    <button class="btn pri" onclick="S.dati=null;render()">${ico('refresh', 'sm')} Riprova</button>
+  </div></div>`;
+}
+
+function barre(voci, max) {
+  if (!voci.length) return '<div class="empty">Ancora nessun dato da mostrare.</div>';
+  return `<div class="bars">${voci.map(([nome, v]) => `<div class="bar">
+    <span class="nm" title="${esc(nome)}">${esc(nome)}</span>
+    <span class="tr"><span class="fl" style="width:${max ? Math.max(3, (v / max) * 100) : 0}%"></span></span>
+    <span class="am">${euroTondo(v)}</span></div>`).join('')}</div>`;
+}
+
+function rigaProdotto(p, destra) {
+  return `<a class="rowi" href="#/prodotto/${encodeURIComponent(p['ID'])}">
+    <span class="emo">${emoji(p)}</span>
+    <span class="tx"><div class="t1">${esc(p['Nome'])}</div><div class="t2">${sottotitolo(p)}</div></span>
+    ${destra || ''}</a>`;
+}
+
+function vHome() {
+  const lista = attivi();
+  const anno = new Date().getFullYear();
+  const totale = lista.reduce((s, p) => s + costo(p), 0);
+  const annoCorr = lista.filter(p => parseData(p['Data acquisto'])?.getFullYear() === anno).reduce((s, p) => s + costo(p), 0);
+  const sc = scadenze();
+  const inScadenza = sc.filter(x => x.giorni >= 0 && x.giorni <= 90);
+
+  if (!lista.length) {
+    return `<section class="hero"><div class="ciao">Ciao ${esc(S.utente)} 👋</div><h1>Benvenuto in Home Vault</h1>
+      <div class="row"><span class="pill">${ico('box', 'sm')} 0 prodotti</span></div></section>
+      <div class="card" style="text-align:center;padding:28px 16px">
+        <div style="font-size:44px">🏠</div>
+        <h2 style="justify-content:center;font-size:18px">L'archivio è ancora vuoto</h2>
+        <p class="muted">Aggiungi il primo acquisto importante: TV, lavatrice, caldaia…</p>
+        <a class="btn pri" href="#/nuovo">${ico('plus', 'sm')} Aggiungi un acquisto</a>
+      </div>`;
+  }
+
+  const perAnno = {};
+  lista.forEach(p => { const d = parseData(p['Data acquisto']); if (d) perAnno[d.getFullYear()] = (perAnno[d.getFullYear()] || 0) + costo(p); });
+  const anni = Object.keys(perAnno).sort().slice(-6).reverse().map(a => [a, perAnno[a]]);
+  const perCat = {};
+  lista.forEach(p => { const c = p['Categoria'] || 'Senza categoria'; perCat[c] = (perCat[c] || 0) + costo(p); });
+  const cats = Object.entries(perCat).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]).slice(0, 6);
+
+  const recenti = lista.slice().sort((a, b) => String(b['Creato il']).localeCompare(String(a['Creato il']))).slice(0, 5);
+  const incompleti = lista.map(p => [p, mancanze(p)]).filter(([, m]) => m.length).slice(0, 5);
+  const docRecenti = (S.dati.documenti || []).filter(d => d['Attivo'] !== false)
+    .sort((a, b) => String(b['Caricato il']).localeCompare(String(a['Caricato il']))).slice(0, 5);
+  const registro = (S.dati.registro || []).slice(0, 6);
+
+  return `
+  <section class="hero">
+    <div style="display:flex;align-items:flex-start;gap:10px">
+      <div style="flex:1"><div class="ciao">Ciao ${esc(S.utente)} 👋</div><h1>La tua casa</h1></div>
+      <button class="icon-btn" style="background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.25);color:#fff" id="brefresh" aria-label="Aggiorna">${ico('refresh', 'sm')}</button>
+    </div>
+    <div class="row">
+      <a class="pill" href="#/prodotti">${ico('box', 'sm')} ${lista.length} prodott${lista.length === 1 ? 'o' : 'i'}</a>
+      <a class="pill" href="#/scadenze">${ico('shield', 'sm')} ${inScadenza.length} in scadenza</a>
+    </div>
+  </section>
+
+  <div class="grid kpis">
+    <div class="card kpi"><div class="lbl">Valore complessivo</div><div class="val">${euroTondo(totale)}</div></div>
+    <div class="card kpi"><div class="lbl">Spesa ${anno}</div><div class="val">${euroTondo(annoCorr)}</div></div>
+    <div class="card kpi"><div class="lbl">Prodotti registrati</div><div class="val">${lista.length}</div></div>
+    <div class="card kpi ${inScadenza.length ? 'alert' : ''}"><div class="lbl">Garanzie entro 90 gg</div><div class="val">${inScadenza.length}</div></div>
+  </div>
+
+  <div class="grid two" style="margin-top:14px">
+    <div class="card"><h2>Spesa per anno</h2>${barre(anni, Math.max(0, ...anni.map(a => a[1])))}</div>
+    <div class="card"><h2>Spesa per categoria</h2>${barre(cats, Math.max(0, ...cats.map(c => c[1])))}</div>
+  </div>
+
+  <div class="card"><h2>${ico('shield', 'sm')} Garanzie in scadenza <a class="more" href="#/scadenze">Tutte</a></h2>
+    ${inScadenza.length ? `<div class="rows">${inScadenza.slice(0, 5).map(x => rigaProdotto(x.p,
+      `<span style="text-align:right"><div class="small muted">${fmtData(x.data)}</div>${chipGiorni(x.giorni)}</span>`)).join('')}</div>`
+      : '<div class="empty">Nessuna garanzia in scadenza nei prossimi 90 giorni. 👍</div>'}
+  </div>
+
+  <div class="grid two" style="margin-top:14px">
+    <div class="card"><h2>Ultimi inseriti <a class="more" href="#/prodotti">Vedi tutti</a></h2>
+      <div class="rows">${recenti.map(p => rigaProdotto(p, `<span class="am small" style="font-weight:700">${haValore(p['Prezzo']) ? euroTondo(costo(p)) : ''}</span>`)).join('')}</div></div>
+    <div class="card"><h2>${ico('alert', 'sm')} Da completare</h2>
+      ${incompleti.length ? `<div class="rows">${incompleti.map(([p, m]) => `<a class="rowi" href="#/prodotto/${encodeURIComponent(p['ID'])}">
+        <span class="emo">${emoji(p)}</span><span class="tx"><div class="t1">${esc(p['Nome'])}</div>
+        <div class="chips" style="margin-top:4px">${m.map(x => `<span class="chip warn">manca ${esc(x)}</span>`).join('')}</div></span></a>`).join('')}</div>`
+        : '<div class="empty">Tutte le schede sono complete. ✨</div>'}</div>
+  </div>
+
+  ${docRecenti.length ? `<div class="card"><h2>${ico('doc', 'sm')} Documenti recenti</h2><div class="rows">${docRecenti.map(d => {
+    const p = trova(d['ID prodotto']);
+    return `<a class="rowi" href="#/prodotto/${encodeURIComponent(d['ID prodotto'])}"><span class="emo">📄</span>
+      <span class="tx"><div class="t1">${esc(d['Nome file'] || d['Tipo documento'])}</div><div class="t2">${esc(d['Tipo documento'])} · ${esc(p ? p['Nome'] : '')}</div></span></a>`;
+  }).join('')}</div></div>` : ''}
+
+  <div class="card"><h2>Ultime modifiche</h2>
+    ${registro.length ? `<div class="rows">${registro.map(r => `<div class="rowi">
+      <span class="tx"><div class="t1">${esc(r['Operazione'])}: ${esc(r['Dettaglio'])}</div>
+      <div class="t2">${esc(r['Utente'])} · ${fmtDataOra(r['Data'])}</div></span></div>`).join('')}</div>`
+      : '<div class="empty">Nessuna modifica registrata.</div>'}
+  </div>`;
+}
+
+function vProdotti() {
+  const f = S.filtri;
+  const lista = attivi();
+  const categorie = [...new Set(lista.map(p => p['Categoria']).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'it'));
+  const anni = [...new Set(lista.map(p => parseData(p['Data acquisto'])?.getFullYear()).filter(Boolean))].sort((a, b) => b - a);
+  const opt = (v, t, sel) => `<option value="${esc(v)}" ${sel === v ? 'selected' : ''}>${esc(t)}</option>`;
+
+  return `<div class="top"><h1>Prodotti</h1></div>
+  <div class="search">${ico('search')}<input id="q" type="search" placeholder="Cerca nome, marca, modello, n° di serie, negozio…" value="${esc(f.q)}" autocomplete="off"></div>
+  <div class="filters">
+    <select id="fcat" aria-label="Categoria">${opt('', 'Tutte le categorie', f.categoria)}${categorie.map(c => opt(c, c, f.categoria)).join('')}</select>
+    <select id="fstato" aria-label="Stato">${opt('', 'Tutti gli stati', f.stato)}${STATI.map(s => opt(s, s, f.stato)).join('')}</select>
+    <select id="fanno" aria-label="Anno">${opt('', 'Tutti gli anni', f.anno)}${anni.map(a => opt(String(a), String(a), f.anno)).join('')}</select>
+    <select id="fordine" aria-label="Ordina">
+      ${opt('data-desc', 'Più recenti', f.ordine)}${opt('data-asc', 'Meno recenti', f.ordine)}
+      ${opt('prezzo-desc', 'Prezzo più alto', f.ordine)}${opt('prezzo-asc', 'Prezzo più basso', f.ordine)}${opt('nome', 'Nome A–Z', f.ordine)}
+    </select>
+  </div>
+  <details class="more-f" ${f.min || f.max ? 'open' : ''}><summary>Filtra per prezzo</summary>
+    <div class="fgrid" style="grid-template-columns:1fr 1fr;margin-top:8px">
+      <input id="fmin" inputmode="decimal" placeholder="Da € (minimo)" value="${esc(f.min)}">
+      <input id="fmax" inputmode="decimal" placeholder="A € (massimo)" value="${esc(f.max)}">
+    </div></details>
+  <div class="toolbar"><span id="conteggio"></span>
+    <span class="seg"><button data-vista="schede" class="${S.vista === 'schede' ? 'on' : ''}" aria-label="Vista a schede">${ico('grid', 'sm')}</button>
+    <button data-vista="elenco" class="${S.vista === 'elenco' ? 'on' : ''}" aria-label="Vista a elenco">${ico('list', 'sm')}</button></span></div>
+  <div id="lista"></div>`;
+}
+
+function filtrati() {
+  const f = S.filtri;
+  const parole = f.q.toLowerCase().split(/\s+/).filter(Boolean);
+  const campi = ['Nome', 'Marca', 'Modello', 'Numero di serie', 'Codice prodotto', 'Venditore', 'Categoria', 'Sottocategoria', 'Ambiente', 'Note', 'ID'];
+  const min = f.min ? Number(String(f.min).replace(',', '.')) : null;
+  const max = f.max ? Number(String(f.max).replace(',', '.')) : null;
+  let l = attivi().filter(p => {
+    if (f.categoria && p['Categoria'] !== f.categoria) return false;
+    if (f.stato && (p['Stato'] || 'In uso') !== f.stato) return false;
+    if (f.anno && String(parseData(p['Data acquisto'])?.getFullYear()) !== f.anno) return false;
+    if (min !== null && isFinite(min) && costo(p) < min) return false;
+    if (max !== null && isFinite(max) && costo(p) > max) return false;
+    if (parole.length) {
+      const testo = campi.map(c => String(p[c] ?? '')).join(' ').toLowerCase();
+      if (!parole.every(w => testo.includes(w))) return false;
+    }
+    return true;
+  });
+  const dataOrd = p => p['Data acquisto'] || String(p['Creato il'] || '').slice(0, 10);
+  const ord = {
+    'data-desc': (a, b) => dataOrd(b).localeCompare(dataOrd(a)),
+    'data-asc': (a, b) => dataOrd(a).localeCompare(dataOrd(b)),
+    'prezzo-desc': (a, b) => costo(b) - costo(a),
+    'prezzo-asc': (a, b) => costo(a) - costo(b),
+    'nome': (a, b) => String(a['Nome']).localeCompare(String(b['Nome']), 'it')
+  }[f.ordine];
+  return l.sort(ord);
+}
+
+function aggiornaLista() {
+  const l = filtrati();
+  $('#conteggio').textContent = l.length === 1 ? '1 prodotto' : l.length + ' prodotti';
+  const box = $('#lista');
+  if (!l.length) {
+    box.innerHTML = attivi().length
+      ? '<div class="card empty">Nessun prodotto corrisponde alla ricerca.</div>'
+      : `<div class="card empty">Ancora nessun prodotto.<br><br><a class="btn pri" href="#/nuovo">${ico('plus', 'sm')} Aggiungi</a></div>`;
+    return;
+  }
+  const garanzia = p => {
+    const g = giorniA(p['Scadenza garanzia']);
+    return g !== null && g <= 90 && ancoraInCasa(p) ? chipGiorni(g) : '';
+  };
+  if (S.vista === 'elenco') {
+    box.className = 'list';
+    box.innerHTML = l.map(p => rigaProdotto(p, `<span style="text-align:right">
+      <div style="font-weight:700">${haValore(p['Prezzo']) ? euroTondo(costo(p)) : ''}</div>
+      <div class="small muted">${p['Data acquisto'] ? fmtData(p['Data acquisto']) : ''}</div></span>`)).join('');
+  } else {
+    box.className = 'cards';
+    box.innerHTML = l.map(p => `<a class="pcard" href="#/prodotto/${encodeURIComponent(p['ID'])}">
+      <span class="emo">${emoji(p)}</span>
+      <div class="t1">${esc(p['Nome'])}</div>
+      <div class="t2">${sottotitolo(p)}</div>
+      <div class="chips">${chipStato(p['Stato'])}${garanzia(p)}</div>
+      <div class="pr">${haValore(p['Prezzo']) ? euroTondo(costo(p)) : '<span class="muted small">Prezzo non inserito</span>'}</div>
+    </a>`).join('');
+  }
+}
+
+function vScheda(id) {
+  const p = trova(id);
+  if (!p) return `<button class="back" onclick="history.back()">${ico('back', 'sm')} Indietro</button>
+    <div class="card empty">Prodotto non trovato. Forse è stato eliminato.</div>`;
+
+  const kv = coppie => {
+    const r = coppie.filter(([, v]) => v !== '' && v !== null && v !== undefined && v !== '—');
+    return r.length ? `<dl class="kv">${r.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${v}</dd>`).join('')}</dl>` : '<div class="empty">Nessun dato inserito.</div>';
+  };
+  const link = u => /^https?:\/\//i.test(String(u || '')) ? `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">Apri ↗</a>` : '';
+  const g = giorniA(p['Scadenza garanzia']);
+  const ga = giorniA(p['Scadenza garanzia aggiuntiva']);
+  const docs = docsDi(p['ID']);
+  const cestinato = !!p['Nel cestino'];
+
+  return `<button class="back" onclick="history.length > 1 ? history.back() : (location.hash='#/prodotti')">${ico('back', 'sm')} Indietro</button>
+  ${cestinato ? `<div class="card" style="background:var(--danger-soft);border-color:transparent;margin-bottom:14px">
+     <strong style="color:var(--danger)">Questo prodotto è nel cestino.</strong>
+     <div class="actions" style="margin-top:10px"><button class="btn sec" data-ripristina="${esc(p['ID'])}">${ico('undo', 'sm')} Ripristina</button></div></div>` : ''}
+  <div class="card">
+    <div class="det-hero"><span class="emo">${emoji(p)}</span>
+      <div style="min-width:0"><h1>${esc(p['Nome'])}</h1><div class="t2">${sottotitolo(p)}</div>
+      <div class="chips" style="margin-top:8px">${chipStato(p['Stato'])}${p['Categoria'] ? `<span class="chip pri">${esc(p['Categoria'])}</span>` : ''}</div></div>
+    </div>
+  </div>
+
+  <div class="sec-title">Acquisto</div>
+  <div class="card">${kv([
+    ['Data acquisto', p['Data acquisto'] ? fmtData(p['Data acquisto']) : ''],
+    ['Negozio', esc(p['Venditore'])],
+    ['Prezzo', haValore(p['Prezzo']) ? euro(p['Prezzo']) : ''],
+    ['Consegna', haValore(p['Spese consegna']) ? euro(p['Spese consegna']) : ''],
+    ['Installazione', haValore(p['Spese installazione']) ? euro(p['Spese installazione']) : ''],
+    ['Totale pagato', costo(p) ? `<strong>${euro(costo(p))}</strong>` : ''],
+    ['Pagamento', esc(p['Pagamento'])],
+    ['Acquistato da', esc(p['Acquistato da'])]
+  ])}</div>
+
+  <div class="sec-title">Garanzia</div>
+  <div class="card">${kv([
+    ['Durata', haValore(p['Garanzia (mesi)']) ? esc(p['Garanzia (mesi)']) + ' mesi' : ''],
+    ['Scadenza', p['Scadenza garanzia'] ? `${fmtData(p['Scadenza garanzia'])} ${chipGiorni(g)}` : ''],
+    ['Verificata', p['Scadenza garanzia'] ? (p['Garanzia verificata'] ? '<span class="chip ok">Sì, sul documento</span>' : '<span class="chip warn">Da verificare</span>') : ''],
+    ['Garanzia aggiuntiva', esc(p['Garanzia aggiuntiva'])],
+    ['Scadenza aggiuntiva', p['Scadenza garanzia aggiuntiva'] ? `${fmtData(p['Scadenza garanzia aggiuntiva'])} ${chipGiorni(ga)}` : '']
+  ])}</div>
+
+  <div class="sec-title">Identificazione e casa</div>
+  <div class="card">${kv([
+    ['Categoria', esc([p['Categoria'], p['Sottocategoria']].filter(Boolean).join(' › '))],
+    ['Numero di serie', esc(p['Numero di serie'])],
+    ['Codice prodotto', esc(p['Codice prodotto'])],
+    ['Ambiente', esc(p['Ambiente'])],
+    ['Installato il', p['Data installazione'] ? fmtData(p['Data installazione']) : ''],
+    ['Pagina prodotto', link(p['Link prodotto'])],
+    ['Sito produttore', link(p['Link produttore'])]
+  ])}</div>
+
+  ${p['Note'] ? `<div class="sec-title">Note</div><div class="card note">${esc(p['Note'])}</div>` : ''}
+
+  <div class="sec-title">Documenti</div>
+  <div class="card">${docs.length
+    ? `<div class="rows">${docs.map(d => `<div class="rowi"><span class="emo">📄</span><span class="tx"><div class="t1">${esc(d['Nome file'])}</div><div class="t2">${esc(d['Tipo documento'])} · ${fmtDataOra(d['Caricato il'])}</div></span></div>`).join('')}</div>`
+    : `<div class="empty">Nessun documento collegato.<br><span class="small">Il caricamento di fatture, manuali e foto arriva nel prossimo aggiornamento.</span></div>`}</div>
+
+  <p class="small muted" style="margin-top:14px">Codice ${esc(p['ID'])} · creato il ${fmtDataOra(p['Creato il'])} · aggiornato il ${fmtDataOra(p['Aggiornato il'])}</p>
+
+  ${cestinato ? '' : `<div class="actions">
+    <a class="btn pri" style="flex:1" href="#/modifica/${encodeURIComponent(p['ID'])}">${ico('edit', 'sm')} Modifica</a>
+    <button class="btn dng" data-cestina="${esc(p['ID'])}">${ico('trash', 'sm')} Cestino</button>
+  </div>`}`;
+}
+
+function vModulo(id) {
+  const p = id ? trova(id) : null;
+  if (id && !p) return `<div class="card empty">Prodotto non trovato.</div>`;
+  const v = k => p ? (p[k] ?? '') : '';
+  const cat = S.dati.categorie || [];
+  const categorie = [...new Set(cat.map(c => c['Categoria']).filter(Boolean).concat(attivi().map(x => x['Categoria']).filter(Boolean)))];
+  const utenti = [...new Set([S.utente, 'Federico', 'Mamma'].concat(attivi().map(x => x['Acquistato da'])).filter(Boolean))];
+  const dl = (idL, valori) => `<datalist id="${idL}">${valori.map(x => `<option value="${esc(x)}">`).join('')}</datalist>`;
+
+  const campo = (nome, tipo, opz = {}) => {
+    const val = v(nome);
+    const idc = 'c_' + nome.replace(/\W+/g, '_');
+    const lab = `<label for="${idc}">${esc(nome)}${opz.req ? ' <span class="req">*</span>' : ''}</label>`;
+    const hint = opz.hint ? `<div class="hint" id="${idc}_h">${opz.hint}</div>` : `<div class="hint" id="${idc}_h" hidden></div>`;
+    const cls = opz.wide ? 'fld wide' : 'fld';
+    let input;
+    switch (tipo) {
+      case 'date': input = `<input id="${idc}" type="date" data-campo="${esc(nome)}" value="${esc(val)}">`; break;
+      case 'euro': input = `<input id="${idc}" inputmode="decimal" data-campo="${esc(nome)}" value="${esc(euroCampo(val))}" placeholder="0,00">`; break;
+      case 'int': input = `<input id="${idc}" type="number" min="0" max="600" step="1" inputmode="numeric" data-campo="${esc(nome)}" value="${esc(val)}" placeholder="es. 24">`; break;
+      case 'url': input = `<input id="${idc}" type="url" inputmode="url" data-campo="${esc(nome)}" value="${esc(val)}" placeholder="https://…">`; break;
+      case 'area': input = `<textarea id="${idc}" data-campo="${esc(nome)}" maxlength="3000">${esc(val)}</textarea>`; break;
+      case 'stato': input = `<select id="${idc}" data-campo="${esc(nome)}">${STATI.map(s => `<option ${(val || 'In uso') === s ? 'selected' : ''}>${s}</option>`).join('')}</select>`; break;
+      case 'bool': return `<div class="${cls}"><label class="check"><input id="${idc}" type="checkbox" data-campo="${esc(nome)}" ${val === true ? 'checked' : ''}> ${esc(opz.etichetta || nome)}</label>${hint}</div>`;
+      default: input = `<input id="${idc}" data-campo="${esc(nome)}" value="${esc(val)}" maxlength="200" ${opz.list ? `list="${opz.list}"` : ''} ${opz.req ? 'required' : ''} ${opz.ph ? `placeholder="${esc(opz.ph)}"` : ''}>`;
+    }
+    return `<div class="${cls}">${lab}${input}${hint}</div>`;
+  };
+
+  return `<button class="back" onclick="history.back()">${ico('back', 'sm')} Annulla</button>
+  <div class="top"><h1>${p ? 'Modifica' : 'Nuovo acquisto'}</h1></div>
+  <form id="fprod" class="form" novalidate data-rid="${uid()}">
+    ${dl('dlcat', categorie)}${dl('dlsub', [])}${dl('dlamb', AMBIENTI)}${dl('dlpag', PAGAMENTI)}${dl('dlute', utenti)}
+    <div class="card"><h2>Prodotto</h2><div class="fgrid">
+      ${campo('Nome', 'text', { req: true, wide: true, ph: 'es. Lavatrice Samsung 9 kg' })}
+      ${campo('Categoria', 'text', { list: 'dlcat', ph: 'Scegli o scrivi' })}
+      ${campo('Sottocategoria', 'text', { list: 'dlsub' })}
+      ${campo('Marca', 'text')}${campo('Modello', 'text')}
+      ${campo('Numero di serie', 'text', { hint: 'Di solito è sulla targhetta, dietro o dentro lo sportello.' })}
+      ${campo('Codice prodotto', 'text')}
+      ${campo('Stato', 'stato')}
+    </div></div>
+
+    <div class="card"><h2>Acquisto</h2><div class="fgrid">
+      ${campo('Data acquisto', 'date')}${campo('Venditore', 'text', { ph: 'Negozio o sito' })}
+      ${campo('Prezzo', 'euro')}${campo('Spese consegna', 'euro')}${campo('Spese installazione', 'euro')}
+      ${campo('Pagamento', 'text', { list: 'dlpag' })}
+      ${campo('Acquistato da', 'text', { list: 'dlute' })}
+    </div></div>
+
+    <div class="card"><h2>In casa</h2><div class="fgrid">
+      ${campo('Ambiente', 'text', { list: 'dlamb', ph: 'es. Cucina' })}${campo('Data installazione', 'date')}
+    </div></div>
+
+    <div class="card"><h2>Garanzia</h2><div class="fgrid">
+      ${campo('Garanzia (mesi)', 'int', { hint: 'Copia la durata dal documento: non tutte le garanzie durano uguale.' })}
+      ${campo('Scadenza garanzia', 'date')}
+      ${campo('Garanzia verificata', 'bool', { etichetta: 'Ho controllato la durata sul documento', wide: true })}
+      ${campo('Garanzia aggiuntiva', 'text', { ph: 'es. Estensione 5 anni del negozio' })}
+      ${campo('Scadenza garanzia aggiuntiva', 'date')}
+    </div></div>
+
+    <div class="card"><h2>Link e note</h2><div class="fgrid">
+      ${campo('Link prodotto', 'url')}${campo('Link produttore', 'url')}
+      ${campo('Note', 'area', { wide: true })}
+    </div></div>
+
+    <div class="err" id="ferr"></div>
+    <div class="savebar"><button type="submit" class="btn pri full" id="bsalva">${p ? 'Salva modifiche' : 'Salva acquisto'}</button></div>
+  </form>`;
+}
+
+function vScadenze() {
+  const sc = scadenze();
+  const gruppi = [
+    ['Scadute', x => x.giorni < 0],
+    ['Entro 30 giorni', x => x.giorni >= 0 && x.giorni <= 30],
+    ['Tra 31 e 60 giorni', x => x.giorni > 30 && x.giorni <= 60],
+    ['Tra 61 e 90 giorni', x => x.giorni > 60 && x.giorni <= 90],
+    ['Attive (oltre 90 giorni)', x => x.giorni > 90]
+  ];
+  const senza = attivi().filter(ancoraInCasa).filter(p => !p['Scadenza garanzia'] && !p['Scadenza garanzia aggiuntiva']);
+  const riga = x => rigaProdotto(x.p, `<span style="text-align:right">
+    <div class="small muted">${x.tipo === 'Garanzia' ? '' : esc(x.tipo) + ' · '}${fmtData(x.data)}</div>
+    <div class="chips" style="justify-content:flex-end;margin-top:2px">${x.verificata ? '' : '<span class="chip warn">Da verificare</span>'}${chipGiorni(x.giorni)}</div></span>`);
+
+  return `<div class="top"><h1>Garanzie</h1></div>
+  <p class="muted small" style="margin-top:-8px">Le date sono quelle inserite nelle schede. Quelle "da verificare" vanno controllate sul documento.</p>
+  ${sc.length ? gruppi.map(([titolo, f]) => {
+    const l = sc.filter(f);
+    return l.length ? `<div class="sec-title">${titolo} · ${l.length}</div><div class="card"><div class="rows">${l.map(riga).join('')}</div></div>` : '';
+  }).join('') : '<div class="card empty">Nessuna garanzia con data di scadenza. Inseriscila nelle schede dei prodotti.</div>'}
+  ${senza.length ? `<div class="sec-title">Senza scadenza indicata · ${senza.length}</div>
+    <div class="card"><div class="rows">${senza.map(p => rigaProdotto(p, '<span class="chip">manca la data</span>')).join('')}</div></div>` : ''}`;
+}
+
+function vAltro() {
+  const cest = nelCestino();
+  const tema = mem.get('hv_tema') || 'auto';
+  return `<div class="top"><h1>Altro</h1></div>
+  <div class="card"><div class="rowi" style="padding:0"><span class="emo">👤</span>
+    <span class="tx"><div class="t1">${esc(S.utente)}</div><div class="t2">Connesso a Home Vault</div></span></div></div>
+
+  <div class="sec-title">Aspetto</div>
+  <div class="card"><div class="fld"><label for="tema">Tema</label>
+    <select id="tema"><option value="auto" ${tema === 'auto' ? 'selected' : ''}>Automatico (come il telefono)</option>
+    <option value="light" ${tema === 'light' ? 'selected' : ''}>Chiaro</option><option value="dark" ${tema === 'dark' ? 'selected' : ''}>Scuro</option></select></div></div>
+
+  <div class="sec-title">Cestino · ${cest.length}</div>
+  <div class="card">${cest.length ? `<div class="rows">${cest.map(p => `<div class="rowi"><span class="emo">${emoji(p)}</span>
+    <span class="tx"><div class="t1">${esc(p['Nome'])}</div><div class="t2">Eliminato da ${esc(p['Eliminato da'] || '?')} · ${fmtDataOra(p['Eliminato il'])}</div></span>
+    <button class="btn sec" style="min-height:40px;padding:8px 12px" data-ripristina="${esc(p['ID'])}">${ico('undo', 'sm')}</button></div>`).join('')}</div>
+    <p class="small muted" style="margin:12px 0 0">Gli elementi nel cestino si possono sempre ripristinare.</p>`
+    : '<div class="empty">Il cestino è vuoto.</div>'}</div>
+
+  <div class="sec-title">Dati</div>
+  <div class="card"><div class="actions" style="margin:0">
+    <button class="btn sec" id="brefresh">${ico('refresh', 'sm')} Aggiorna dati</button>
+    <button class="btn dng" id="besci">${ico('out', 'sm')} Esci</button></div>
+    <p class="small muted" style="margin:12px 0 0">I dati sono nel foglio Google privato di Federico. Home Vault ${VERSIONE}</p></div>`;
+}
+
+/* ---------- Eventi ---------- */
+function bind(r) {
+  const br = $('#brefresh');
+  if (br) br.onclick = async () => { br.disabled = true; if (await ricarica()) toast('Dati aggiornati'); };
+
+  $$('[data-cestina]').forEach(b => b.onclick = async () => {
+    const p = trova(b.dataset.cestina);
+    if (!confirm(`Spostare "${p ? p['Nome'] : ''}" nel cestino?\n\nPotrai ripristinarlo dalla sezione Altro.`)) return;
+    b.disabled = true;
+    try {
+      await apiSicura('cestino', { id: b.dataset.cestina });
+      await carica();
+      toast('Spostato nel cestino');
+      location.hash = '#/prodotti';
+    } catch (e) { toast(e.message, true); b.disabled = false; }
+  });
+
+  $$('[data-ripristina]').forEach(b => b.onclick = async () => {
+    b.disabled = true;
+    try {
+      await apiSicura('ripristina', { id: b.dataset.ripristina });
+      await carica();
+      toast('Prodotto ripristinato');
+      render(true);
+    } catch (e) { toast(e.message, true); b.disabled = false; }
+  });
+
+  if (r.p === 'prodotti') bindProdotti();
+  if (r.p === 'nuovo' || r.p === 'modifica') bindModulo(r.p === 'modifica' ? r.id : '');
+  if (r.p === 'altro') {
+    $('#tema').onchange = e => { mem.set('hv_tema', e.target.value); applicaTema(); };
+    $('#besci').onclick = () => { if (confirm('Vuoi uscire? Per rientrare servirà di nuovo il PIN.')) esci(true); };
+  }
+}
+
+function bindProdotti() {
+  const f = S.filtri;
+  let t;
+  $('#q').oninput = e => { clearTimeout(t); t = setTimeout(() => { f.q = e.target.value; aggiornaLista(); }, 150); };
+  $('#fcat').onchange = e => { f.categoria = e.target.value; aggiornaLista(); };
+  $('#fstato').onchange = e => { f.stato = e.target.value; aggiornaLista(); };
+  $('#fanno').onchange = e => { f.anno = e.target.value; aggiornaLista(); };
+  $('#fordine').onchange = e => { f.ordine = e.target.value; aggiornaLista(); };
+  $('#fmin').oninput = e => { f.min = e.target.value; aggiornaLista(); };
+  $('#fmax').oninput = e => { f.max = e.target.value; aggiornaLista(); };
+  $$('[data-vista]').forEach(b => b.onclick = () => {
+    S.vista = b.dataset.vista; mem.set('hv_vista', S.vista);
+    $$('[data-vista]').forEach(x => x.classList.toggle('on', x === b));
+    aggiornaLista();
+  });
+  aggiornaLista();
+}
+
+function bindModulo(id) {
+  const form = $('#fprod');
+  const el = nome => form.querySelector(`[data-campo="${nome}"]`);
+  const cat = el('Categoria'), sub = el('Sottocategoria');
+  const acquisto = el('Data acquisto'), mesi = el('Garanzia (mesi)'), scad = el('Scadenza garanzia');
+  const hintScad = $('#' + scad.id + '_h');
+
+  if (!id) el('Acquistato da').value = S.utente;
+
+  const aggiornaSotto = () => {
+    const l = (S.dati.categorie || []).filter(c => c['Categoria'] === cat.value && c['Sottocategoria']).map(c => c['Sottocategoria']);
+    $('#dlsub').innerHTML = [...new Set(l)].map(x => `<option value="${esc(x)}">`).join('');
+  };
+  cat.addEventListener('input', aggiornaSotto);
+  aggiornaSotto();
+
+  // Scadenza suggerita dalla durata: solo se l'utente non l'ha scritta a mano.
+  scad.dataset.auto = scad.value ? '0' : '1';
+  const suggerisci = () => {
+    if (scad.dataset.auto !== '1') return;
+    const s = aggiungiMesi(acquisto.value, mesi.value);
+    scad.value = s;
+    hintScad.hidden = !s;
+    hintScad.className = 'hint auto';
+    hintScad.textContent = s ? 'Calcolata da data di acquisto + durata. Controllala sul documento.' : '';
+  };
+  acquisto.addEventListener('change', suggerisci);
+  mesi.addEventListener('input', suggerisci);
+  scad.addEventListener('input', () => { scad.dataset.auto = scad.value ? '0' : '1'; hintScad.hidden = true; });
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const err = $('#ferr'), btn = $('#bsalva');
+    err.textContent = '';
+    const dati = {};
+    $$('[data-campo]', form).forEach(i => { dati[i.dataset.campo] = i.type === 'checkbox' ? i.checked : i.value.trim(); });
+
+    if (!dati['Nome']) { err.textContent = 'Scrivi il nome del prodotto.'; el('Nome').focus(); return; }
+    for (const k of ['Prezzo', 'Spese consegna', 'Spese installazione']) {
+      const s = dati[k].replace(/\s|€/g, '');
+      const n = Number(s.includes(',') ? s.replace(/\./g, '').replace(',', '.') : s);
+      if (s && (!isFinite(n) || n < 0)) { err.textContent = `Controlla l'importo in "${k}".`; el(k).focus(); return; }
+    }
+    for (const k of ['Link prodotto', 'Link produttore']) {
+      if (dati[k] && !/^https?:\/\/\S+$/i.test(dati[k])) { err.textContent = `Il link in "${k}" deve iniziare con https://`; el(k).focus(); return; }
+    }
+    if (id) dati.ID = id;
+
+    btn.disabled = true; btn.textContent = 'Salvataggio…';
+    try {
+      const r = await apiSicura('salvaProdotto', { prodotto: dati, richiestaId: form.dataset.rid });
+      await carica();
+      toast(id ? 'Modifiche salvate ✓' : 'Acquisto salvato ✓');
+      location.replace('#/prodotto/' + encodeURIComponent(r.id));
+    } catch (e2) {
+      err.textContent = e2.message;
+      btn.disabled = false; btn.textContent = id ? 'Salva modifiche' : 'Salva acquisto';
+    }
+  });
+}
+
+/* ---------- Avvio ---------- */
+$$('[data-i]').forEach(s => { s.outerHTML = ico(s.dataset.i); });
+applicaTema();
+if (!location.hash) location.hash = '#/home';
+render();
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
+</script>
+</body>
+</html>
