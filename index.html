@@ -4,192 +4,214 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Home Vault</title>
-<meta name="theme-color" content="#4f46e5">
+<meta name="theme-color" content="#f3f4fa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c0e18" media="(prefers-color-scheme: dark)">
 <meta name="robots" content="noindex, nofollow">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
 :root {
-  --bg: #f4f5fb;
-  --surface: #ffffff;
-  --surface-2: #f0f1f8;
-  --text: #171a2c;
-  --muted: #6a6f88;
-  --border: #e3e5f0;
-  --primary: #4f46e5;
-  --primary-2: #7c3aed;
-  --primary-soft: #eceafe;
-  --ok: #0f9d6b;
-  --ok-soft: #e1f6ee;
-  --warn: #c27803;
-  --warn-soft: #fdf2dc;
-  --danger: #d6334c;
-  --danger-soft: #fde7ea;
-  --shadow: 0 1px 2px rgba(23,26,44,.05), 0 6px 20px rgba(23,26,44,.06);
-  --radius: 18px;
-  color-scheme: light;
+  --bg: #f3f4fa; --surface: #ffffff; --surface-2: #eef0f7; --text: #151829; --muted: #6b7090;
+  --border: #e4e6f0; --primary: #5b4ff0; --primary-2: #8b5cf6; --primary-soft: #ecebff;
+  --ok: #0e9467; --ok-soft: #e0f5ec; --warn: #b86e00; --warn-soft: #fdf1da;
+  --danger: #d4334b; --danger-soft: #fde8eb;
+  --shadow: 0 1px 2px rgba(21,24,41,.04), 0 6px 18px rgba(21,24,41,.05);
+  --radius: 20px; color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0e1020; --surface: #171a2e; --surface-2: #20243b; --text: #eceefb;
-    --muted: #9ba0bd; --border: #2a2f4a; --primary: #8b84ff; --primary-2: #b18cff;
-    --primary-soft: #262650; --ok: #3ad29a; --ok-soft: #123a2c; --warn: #f2b84b;
-    --warn-soft: #3b2f13; --danger: #ff6f86; --danger-soft: #3d1a22;
-    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
-    color-scheme: dark;
+    --bg: #0c0e18; --surface: #151827; --surface-2: #1e2235; --text: #eef0fa; --muted: #959bba;
+    --border: #23273c; --primary: #8a83ff; --primary-2: #b38cff; --primary-soft: #23234a;
+    --ok: #3fd39c; --ok-soft: #10342a; --warn: #f3bb52; --warn-soft: #382c12;
+    --danger: #ff7389; --danger-soft: #3a1a22; --shadow: none; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #0e1020; --surface: #171a2e; --surface-2: #20243b; --text: #eceefb;
-  --muted: #9ba0bd; --border: #2a2f4a; --primary: #8b84ff; --primary-2: #b18cff;
-  --primary-soft: #262650; --ok: #3ad29a; --ok-soft: #123a2c; --warn: #f2b84b;
-  --warn-soft: #3b2f13; --danger: #ff6f86; --danger-soft: #3d1a22;
-  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
-  color-scheme: dark;
+  --bg: #0c0e18; --surface: #151827; --surface-2: #1e2235; --text: #eef0fa; --muted: #959bba;
+  --border: #23273c; --primary: #8a83ff; --primary-2: #b38cff; --primary-soft: #23234a;
+  --ok: #3fd39c; --ok-soft: #10342a; --warn: #f3bb52; --warn-soft: #382c12;
+  --danger: #ff7389; --danger-soft: #3a1a22; --shadow: none; color-scheme: dark;
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+[hidden] { display: none !important; }
 html, body { margin: 0; }
+body { overflow-x: hidden; overflow-x: clip; }
 body {
   background: var(--bg); color: var(--text);
   font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  min-height: 100vh; padding-bottom: calc(96px + env(safe-area-inset-bottom));
+  min-height: 100vh; padding-bottom: calc(100px + env(safe-area-inset-bottom));
+  overflow-wrap: anywhere;
 }
 a { color: inherit; text-decoration: none; }
 button, input, select, textarea { font: inherit; color: inherit; }
-.wrap { max-width: 960px; margin: 0 auto; padding: 16px; }
+.wrap { max-width: 720px; margin: 0 auto; padding: calc(14px + env(safe-area-inset-top)) 16px 16px; }
 .ico { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 .ico.sm { width: 18px; height: 18px; }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
 
-/* Intestazione */
-.top { display: flex; align-items: center; gap: 12px; margin: 4px 0 16px; }
-.top h1 { font-size: 26px; margin: 0; letter-spacing: -.02em; flex: 1; }
-.top .sub { color: var(--muted); font-size: 14px; }
+/* Intestazioni */
+.top { display: flex; align-items: center; gap: 12px; margin: 6px 0 14px; }
+.top h1 { font-size: 28px; line-height: 1.15; margin: 0; letter-spacing: -.02em; flex: 1; min-width: 0; }
+.intro { color: var(--muted); font-size: 14px; margin: -6px 0 14px; }
 .icon-btn {
-  width: 42px; height: 42px; border-radius: 14px; border: 1px solid var(--border);
-  background: var(--surface); display: grid; place-items: center; cursor: pointer;
+  width: 44px; height: 44px; border-radius: 50%; border: 0; flex: none;
+  background: var(--surface); color: var(--text); display: grid; place-items: center; cursor: pointer;
 }
-.icon-btn:active { transform: scale(.96); }
+.icon-btn:active { transform: scale(.95); }
+.sec-title { display: flex; align-items: baseline; gap: 8px; font-size: 17px; font-weight: 700; margin: 24px 2px 10px; }
+.sec-title .n { color: var(--muted); font-weight: 600; font-size: 14px; }
+.sec-title .more { margin-left: auto; font-size: 14px; color: var(--primary); font-weight: 600; flex: none; }
+
+/* Hero home */
 .hero {
-  background: linear-gradient(135deg, var(--primary), var(--primary-2));
-  color: #fff; border-radius: 24px; padding: 20px; box-shadow: var(--shadow); margin-bottom: 16px;
+  background: linear-gradient(140deg, var(--primary), var(--primary-2)); color: #fff;
+  border-radius: 26px; padding: 18px 18px 16px;
 }
-.hero .ciao { opacity: .85; font-size: 14px; }
-.hero h1 { margin: 2px 0 14px; font-size: 26px; letter-spacing: -.02em; }
-.hero .row { display: flex; gap: 10px; flex-wrap: wrap; }
-.hero .pill {
-  background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.22);
-  border-radius: 999px; padding: 8px 14px; font-weight: 600; font-size: 14px; display: inline-flex; gap: 8px; align-items: center;
+.hero .riga1 { display: flex; align-items: center; gap: 10px; }
+.hero .ciao { flex: 1; min-width: 0; opacity: .9; font-size: 15px; font-weight: 600; }
+.hero .icon-btn { background: rgba(255,255,255,.18); color: #fff; width: 40px; height: 40px; }
+.hero .lbl { margin-top: 14px; font-size: 13px; opacity: .85; }
+.hero .tot { font-size: 34px; font-weight: 800; letter-spacing: -.02em; line-height: 1.1; }
+.hero .pills { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 16px; }
+.hero .pill { background: rgba(255,255,255,.15); border-radius: 14px; padding: 9px 10px; min-width: 0; }
+.hero .pill b { display: block; font-size: 19px; line-height: 1.2; }
+.hero .pill span { font-size: 12px; opacity: .9; line-height: 1.2; display: block; }
+
+.btn-scan {
+  display: flex; align-items: center; gap: 14px; margin-top: 12px; padding: 14px 16px;
+  background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
 }
+.btn-scan .emo { background: var(--primary); color: #fff; }
+.btn-scan .tx { flex: 1; min-width: 0; }
+.btn-scan .t1 { font-weight: 700; }
+.btn-scan .t2 { color: var(--muted); font-size: 13px; }
 
-/* Card e griglie */
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
-.card + .card, .card + .grid, .grid + .card, .grid + .grid { margin-top: 14px; }
-.card h2 { font-size: 16px; margin: 0 0 12px; display: flex; align-items: center; gap: 8px; }
-.card h2 .more { margin-left: auto; font-size: 13px; color: var(--primary); font-weight: 600; }
-.grid { display: grid; gap: 14px; }
-.kpis { grid-template-columns: repeat(2, 1fr); }
-@media (min-width: 720px) { .kpis { grid-template-columns: repeat(4, 1fr); } .two { grid-template-columns: 1fr 1fr; } }
-.kpi .lbl { color: var(--muted); font-size: 13px; }
-.kpi .val { font-size: 22px; font-weight: 700; letter-spacing: -.02em; margin-top: 4px; }
-.kpi.alert .val { color: var(--warn); }
+/* Card */
+.card { background: var(--surface); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); min-width: 0; }
+.card + .card { margin-top: 12px; }
+.card h2 { font-size: 16px; margin: 0 0 12px; }
 
-/* Barre grafico */
-.bars { display: grid; gap: 10px; }
-.bar { display: grid; grid-template-columns: 96px 1fr auto; gap: 10px; align-items: center; font-size: 14px; }
-.bar .nm { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.bar .tr { height: 10px; border-radius: 99px; background: var(--surface-2); overflow: hidden; }
-.bar .fl { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--primary), var(--primary-2)); transition: width .5s ease; }
-.bar .am { font-weight: 600; font-variant-numeric: tabular-nums; }
+/* Righe (elenco) */
+.lista { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+.riga { display: flex; align-items: center; gap: 12px; padding: 13px 14px; min-width: 0; }
+.riga + .riga { border-top: 1px solid var(--border); }
+a.riga:active { background: var(--surface-2); }
+.riga .tx { flex: 1; min-width: 0; }
+.riga .t1 { font-weight: 650; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.riga .t2 { display: block; color: var(--muted); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 1px; }
+.riga .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; font-size: 13px; color: var(--muted); }
+.riga .dx { flex: none; font-weight: 700; font-size: 15px; white-space: nowrap; text-align: right; }
+.riga .dx small { display: block; font-weight: 500; font-size: 12px; color: var(--muted); }
+.riga .chev { color: var(--muted); opacity: .6; flex: none; }
+.emo { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; font-size: 22px; background: var(--surface-2); flex: none; }
 
-/* Elenchi */
-.rows { display: grid; }
-.rowi { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--border); }
-.rowi:first-child { border-top: 0; padding-top: 0; }
-.rowi:last-child { padding-bottom: 0; }
-.rowi .tx { flex: 1; min-width: 0; }
-.rowi .t1 { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.rowi .t2 { color: var(--muted); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.emo { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; font-size: 22px; background: var(--primary-soft); flex: none; }
-.chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 99px; font-size: 12px; font-weight: 600; background: var(--surface-2); color: var(--muted); white-space: nowrap; }
+.chip { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 99px; font-size: 12px; font-weight: 650; background: var(--surface-2); color: var(--muted); white-space: nowrap; }
 .chip.ok { background: var(--ok-soft); color: var(--ok); }
 .chip.warn { background: var(--warn-soft); color: var(--warn); }
 .chip.danger { background: var(--danger-soft); color: var(--danger); }
 .chip.pri { background: var(--primary-soft); color: var(--primary); }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.empty { text-align: center; color: var(--muted); padding: 18px 8px; font-size: 14px; }
+.empty { text-align: center; color: var(--muted); padding: 22px 12px; font-size: 14px; }
 
-/* Prodotti */
+/* Prodotti: ricerca e filtri */
 .search { position: relative; }
 .search .ico { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); }
-.search input { padding-left: 44px; }
-.filters { display: flex; gap: 8px; overflow-x: auto; padding: 12px 0 4px; scrollbar-width: none; }
-.filters::-webkit-scrollbar { display: none; }
-.filters select { width: auto; min-width: 0; flex: none; padding: 8px 12px; border-radius: 99px; font-size: 14px; }
-.toolbar { display: flex; align-items: center; justify-content: space-between; margin: 10px 0 12px; color: var(--muted); font-size: 14px; }
-.seg { display: inline-flex; background: var(--surface-2); border-radius: 12px; padding: 3px; }
-.seg button { border: 0; background: none; padding: 6px 10px; border-radius: 9px; cursor: pointer; color: var(--muted); display: grid; place-items: center; }
-.seg button.on { background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
-.cards { display: grid; gap: 12px; grid-template-columns: repeat(2, 1fr); }
-@media (min-width: 720px) { .cards { grid-template-columns: repeat(3, 1fr); } }
-.pcard { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 8px; min-width: 0; transition: transform .15s; }
-.pcard:active { transform: scale(.98); }
-.pcard .t1 { font-weight: 700; line-height: 1.25; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-.pcard .t2 { color: var(--muted); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.pcard .pr { font-weight: 700; margin-top: auto; }
-.list .rowi { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 12px; margin-bottom: 8px; box-shadow: var(--shadow); }
-.list .rowi:first-child { padding-top: 12px; }
-details.more-f { margin-top: 4px; }
-details.more-f summary { cursor: pointer; color: var(--primary); font-size: 14px; font-weight: 600; list-style: none; padding: 4px 0; }
-details.more-f summary::-webkit-details-marker { display: none; }
+.search input { padding-left: 44px; background: var(--surface); border-color: transparent; }
+.tabs { display: flex; gap: 8px; overflow-x: auto; padding: 12px 0 2px; scrollbar-width: none; margin: 0 -16px; padding-left: 16px; padding-right: 16px; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab { border: 0; background: var(--surface); color: var(--muted); padding: 8px 14px; border-radius: 99px; font-weight: 650; font-size: 14px; white-space: nowrap; cursor: pointer; flex: none; }
+.tab.on { background: var(--text); color: var(--bg); }
+details.filtri { margin-top: 10px; }
+details.filtri > summary { cursor: pointer; color: var(--primary); font-size: 14px; font-weight: 650; list-style: none; padding: 4px 2px; }
+details.filtri > summary::-webkit-details-marker { display: none; }
+.fgrid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 10px; }
+.conteggio { color: var(--muted); font-size: 14px; margin: 14px 2px 10px; }
 
-/* Scheda */
-.back { display: inline-flex; align-items: center; gap: 4px; color: var(--muted); font-weight: 600; margin-bottom: 10px; cursor: pointer; background: none; border: 0; padding: 4px 0; }
-.det-hero { display: flex; gap: 14px; align-items: center; }
-.det-hero .emo { width: 64px; height: 64px; font-size: 32px; border-radius: 20px; }
-.det-hero h1 { margin: 0; font-size: 22px; line-height: 1.2; letter-spacing: -.01em; }
-.det-hero .t2 { color: var(--muted); }
-dl.kv { display: grid; grid-template-columns: minmax(110px, 40%) 1fr; gap: 10px 12px; margin: 0; font-size: 15px; }
-dl.kv dt { color: var(--muted); }
-dl.kv dd { margin: 0; overflow-wrap: anywhere; }
-dl.kv dd a { color: var(--primary); font-weight: 600; }
+/* Scheda prodotto */
+.back { display: inline-flex; align-items: center; gap: 4px; color: var(--muted); font-weight: 650; margin-bottom: 8px; cursor: pointer; background: none; border: 0; padding: 6px 0; }
+.det-hero { text-align: center; padding: 6px 4px 4px; }
+.det-hero .emo { width: 72px; height: 72px; font-size: 36px; border-radius: 22px; margin: 0 auto 12px; }
+.det-hero h1 { margin: 0; font-size: 24px; line-height: 1.2; letter-spacing: -.01em; }
+.det-hero .t2 { color: var(--muted); margin-top: 4px; }
+.det-hero .chips { justify-content: center; margin-top: 10px; }
+.tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 16px; }
+.tile { background: var(--surface); border-radius: 18px; padding: 12px 14px; box-shadow: var(--shadow); min-width: 0; }
+.tile .l { font-size: 12px; color: var(--muted); font-weight: 600; }
+.tile .v { font-size: 18px; font-weight: 750; margin-top: 2px; line-height: 1.25; }
+.tile .s { font-size: 12px; margin-top: 4px; }
+.kv .riga { display: block; padding: 11px 14px; }
+.kv dt { font-size: 12.5px; color: var(--muted); font-weight: 600; }
+.kv dd { margin: 2px 0 0; font-weight: 550; }
+.kv dd a { color: var(--primary); font-weight: 650; }
+.kv dd .chip { margin-left: 6px; vertical-align: 1px; }
 .note { white-space: pre-wrap; }
-.actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+.actions { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+.adddoc { border-top: 1px solid var(--border); padding: 14px; }
+.adddoc .rr { display: flex; gap: 8px; margin-top: 8px; }
+.adddoc select { flex: 1; min-width: 0; }
 
 /* Bottoni e campi */
 .btn {
-  border: 0; border-radius: 14px; padding: 12px 18px; font-weight: 700; cursor: pointer;
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px;
+  border: 0; border-radius: 16px; padding: 12px 18px; font-weight: 700; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; text-align: center;
 }
 .btn:disabled { opacity: .6; cursor: default; }
-.btn.pri { background: linear-gradient(135deg, var(--primary), var(--primary-2)); color: #fff; }
+.btn.pri { background: var(--primary); color: #fff; }
 .btn.sec { background: var(--surface-2); color: var(--text); }
 .btn.dng { background: var(--danger-soft); color: var(--danger); }
 .btn.full { width: 100%; }
+.btn.mini { min-height: 40px; padding: 8px 14px; border-radius: 12px; flex: none; }
 input, select, textarea {
-  width: 100%; border: 1px solid var(--border); background: var(--surface); border-radius: 14px;
-  padding: 12px 14px; outline: none; min-height: 48px;
+  display: block; width: 100%; min-width: 0; max-width: 100%; border: 1.5px solid var(--border); background: var(--bg);
+  border-radius: 14px; padding: 12px 14px; outline: none; min-height: 50px;
 }
+input[type="date"] { -webkit-appearance: none; appearance: none; }
 textarea { min-height: 96px; resize: vertical; }
-input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
+input:focus, select:focus, textarea:focus { border-color: var(--primary); }
 .form { display: grid; gap: 14px; }
-.fld label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
-.fld .hint { font-size: 12px; color: var(--muted); margin-top: 5px; }
+.fld { min-width: 0; }
+.fld label { display: block; font-size: 14px; font-weight: 650; margin: 0 0 6px 2px; }
+.fld .hint { font-size: 12.5px; color: var(--muted); margin: 5px 2px 0; }
 .fld .hint.auto { color: var(--warn); }
-.fgrid { display: grid; gap: 14px; }
-@media (min-width: 720px) { .fgrid { grid-template-columns: 1fr 1fr; } .fgrid .wide { grid-column: 1 / -1; } }
-.check { display: flex; align-items: center; gap: 10px; font-weight: 600; min-height: 48px; }
-.check input { width: 22px; height: 22px; min-height: 0; accent-color: var(--primary); }
+.fgrid { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 640px) { .fgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .fgrid .wide { grid-column: 1 / -1; } }
+.check { display: flex; align-items: center; gap: 12px; font-weight: 600; min-height: 50px; line-height: 1.3; }
+.check input { width: 24px; height: 24px; min-height: 0; flex: none; accent-color: var(--primary); }
 .req { color: var(--danger); }
-.savebar {
-  position: sticky; bottom: calc(84px + env(safe-area-inset-bottom)); z-index: 5;
-  background: var(--bg); padding: 10px 0; display: flex; gap: 10px;
-}
+.savebar { position: sticky; bottom: calc(84px + env(safe-area-inset-bottom)); z-index: 5; padding: 10px 0; }
+details.altri > summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 10px; font-weight: 700; }
+details.altri > summary::-webkit-details-marker { display: none; }
+details.altri[open] > summary .fr { transform: rotate(180deg); }
+.fr { transition: transform .2s; color: var(--muted); }
+
+/* Lettura fattura */
+.scan .actions { margin-top: 12px; }
+.scan .actions .btn { flex: 1 1 140px; }
+label.btn:has(input:disabled) { opacity: .5; pointer-events: none; }
+.scanning { display: flex; align-items: center; gap: 10px; margin-top: 12px; font-weight: 600; color: var(--primary); }
+.spin { width: 18px; height: 18px; border-radius: 50%; border: 3px solid var(--primary-soft); border-top-color: var(--primary); animation: gira .8s linear infinite; flex: none; }
+@keyframes gira { to { transform: rotate(360deg); } }
+.okdoc { display: flex; align-items: center; gap: 8px; margin-top: 12px; flex-wrap: wrap; font-weight: 700; }
+.okdoc select { width: auto; min-height: 40px; padding: 6px 10px; }
+details.letto summary { cursor: pointer; color: var(--primary); font-size: 14px; font-weight: 600; list-style: none; padding: 8px 0 4px; }
+details.letto summary::-webkit-details-marker { display: none; }
+.linechip { border: 0; cursor: pointer; text-align: left; white-space: normal; font-weight: 500; font-size: 13px; padding: 6px 10px; border-radius: 10px; }
+input.dafattura, textarea.dafattura { border-color: var(--warn); background: var(--warn-soft); }
+
+/* Statistiche */
+.bars { display: grid; gap: 12px; }
+.bar .top2 { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; }
+.bar .nm { color: var(--muted); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar .am { font-weight: 700; flex: none; font-variant-numeric: tabular-nums; }
+.bar .tr { height: 8px; border-radius: 99px; background: var(--surface-2); overflow: hidden; margin-top: 5px; }
+.bar .fl { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--primary), var(--primary-2)); }
 
 /* Login */
 .login { min-height: 100vh; display: grid; place-items: center; padding: 24px 16px; }
 .login .box { width: 100%; max-width: 380px; }
-.logo { width: 76px; height: 76px; border-radius: 24px; margin: 0 auto 16px; display: grid; place-items: center; background: linear-gradient(135deg, var(--primary), var(--primary-2)); color: #fff; box-shadow: var(--shadow); }
+.logo { width: 76px; height: 76px; border-radius: 24px; margin: 0 auto 16px; display: grid; place-items: center; background: linear-gradient(140deg, var(--primary), var(--primary-2)); color: #fff; }
 .logo .ico { width: 38px; height: 38px; }
 .login h1 { text-align: center; margin: 0 0 4px; font-size: 28px; letter-spacing: -.02em; }
 .login p.s { text-align: center; color: var(--muted); margin: 0 0 24px; }
@@ -198,56 +220,38 @@ input:focus, select:focus, textarea:focus { border-color: var(--primary); box-sh
 /* Navigazione */
 nav.bottom {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
-  background: color-mix(in srgb, var(--surface) 92%, transparent);
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  background: color-mix(in srgb, var(--surface) 94%, transparent);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
   border-top: 1px solid var(--border);
-  padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+  padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
 }
-nav.bottom .in { max-width: 560px; margin: 0 auto; display: grid; grid-template-columns: repeat(5, 1fr); align-items: center; }
-nav.bottom a { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 11px; color: var(--muted); font-weight: 600; padding: 4px 0; }
+nav.bottom .in { max-width: 520px; margin: 0 auto; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); align-items: center; }
+nav.bottom a { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 11px; color: var(--muted); font-weight: 650; padding: 6px 0; min-width: 0; }
 nav.bottom a.on { color: var(--primary); }
-nav.bottom a.fab {
-  width: 56px; height: 56px; border-radius: 18px; margin: -22px auto 0;
-  background: linear-gradient(135deg, var(--primary), var(--primary-2)); color: #fff; justify-content: center;
-  box-shadow: 0 8px 20px color-mix(in srgb, var(--primary) 40%, transparent);
-}
+nav.bottom a.fab { width: 54px; height: 54px; border-radius: 50%; margin: -20px auto 0; background: var(--primary); color: #fff; justify-content: center; box-shadow: 0 8px 22px color-mix(in srgb, var(--primary) 45%, transparent); }
 nav.bottom a.fab .ico { width: 28px; height: 28px; }
 
-.scan { background: linear-gradient(135deg, var(--primary-soft), var(--surface) 70%); }
-label.btn:has(input:disabled) { opacity: .5; pointer-events: none; }
-.scanning { display: flex; align-items: center; gap: 10px; margin-top: 12px; font-weight: 600; color: var(--primary); }
-.spin { width: 18px; height: 18px; border-radius: 50%; border: 3px solid var(--primary-soft); border-top-color: var(--primary); animation: gira .8s linear infinite; flex: none; }
-@keyframes gira { to { transform: rotate(360deg); } }
-.okdoc { display: flex; align-items: center; gap: 8px; margin-top: 12px; flex-wrap: wrap; font-weight: 700; }
-.okdoc select { width: auto; min-height: 40px; padding: 6px 10px; }
-.linechip { border: 0; cursor: pointer; text-align: left; white-space: normal; font-weight: 500; font-size: 13px; }
-input.dafattura, textarea.dafattura { background: var(--warn-soft); }
-details.altri > summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; font-weight: 700; }
-details.altri > summary::-webkit-details-marker { display: none; }
-.adddoc { border-top: 1px solid var(--border); margin-top: 14px; padding-top: 14px; }
-.viewer { position: fixed; inset: 0; z-index: 100; background: rgba(10,12,24,.94); display: flex; flex-direction: column; }
+/* Visualizzatore documenti */
+.viewer { position: fixed; inset: 0; z-index: 100; background: rgba(8,9,16,.95); display: flex; flex-direction: column; }
 .vbar { display: flex; gap: 8px; align-items: center; padding: calc(10px + env(safe-area-inset-top)) 12px 10px; background: var(--surface); }
 .vbar .vt { flex: 1; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
-.vbar .btn { min-height: 40px; padding: 8px 14px; }
+.vbar .btn { min-height: 40px; padding: 8px 14px; flex: none; }
 .vbody { flex: 1; overflow: auto; display: flex; align-items: flex-start; justify-content: center; }
 .vbody img { max-width: 100%; height: auto; display: block; margin: auto; }
 .vbody iframe { width: 100%; height: 100%; border: 0; background: #fff; }
 
 /* Varie */
 .toast {
-  position: fixed; left: 50%; bottom: calc(100px + env(safe-area-inset-bottom)); transform: translateX(-50%) translateY(20px);
+  position: fixed; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom)); transform: translateX(-50%) translateY(20px);
   background: var(--text); color: var(--bg); padding: 12px 18px; border-radius: 14px; font-weight: 600; font-size: 14px;
-  opacity: 0; pointer-events: none; transition: .25s; z-index: 50; max-width: calc(100% - 32px); text-align: center;
+  opacity: 0; pointer-events: none; transition: .25s; z-index: 150; width: max-content; max-width: calc(100% - 32px); text-align: center;
 }
 .toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
 .toast.err { background: var(--danger); color: #fff; }
 .skel { background: linear-gradient(90deg, var(--surface-2), var(--surface), var(--surface-2)); background-size: 200% 100%; animation: sk 1.2s infinite; border-radius: var(--radius); }
 @keyframes sk { to { background-position: -200% 0; } }
-.fade { animation: fd .25s ease; }
+.fade { animation: fd .22s ease; }
 @keyframes fd { from { opacity: 0; transform: translateY(6px); } }
-.muted { color: var(--muted); }
-.small { font-size: 13px; }
-.sec-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 22px 0 10px; }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 </style>
 </head>
@@ -271,7 +275,7 @@ details.altri > summary::-webkit-details-marker { display: none; }
    (finisce con /exec). Non è un segreto: senza PIN non apre nulla.
    ========================================================= */
 const API_URL = 'https://script.google.com/macros/s/AKfycbxdj3IFzUgoMA3PLSxcetu9Q_yqGX2kvQlXXsqEg4Z_WU0d80_XHhrQnap_DK02Ehxo/exec';
-const VERSIONE = '3.0';
+const VERSIONE = '4.0';
 
 const STATI = ['In uso', 'In riparazione', 'Sostituito', 'Venduto', 'Dismesso'];
 const AMBIENTI = ['Cucina', 'Soggiorno', 'Camera da letto', 'Cameretta', 'Bagno', 'Lavanderia', 'Studio', 'Taverna', 'Garage', 'Esterno'];
@@ -355,12 +359,13 @@ const ICONE = {
   undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>',
   out: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/>',
   lock: '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  chev: '<path d="m9 18 6-6-6-6"/>',
   alert: '<path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>'
 };
 const ico = (n, cls = '') => `<svg class="ico ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONE[n] || ''}</svg>`;
 
 function emoji(p) {
-  const c = String((p && (p['Categoria'] + ' ' + p['Sottocategoria'])) || '').toLowerCase();
+  const c = String((p && [p['Nome'], p['Categoria'], p['Sottocategoria']].join(' ')) || '').toLowerCase();
   const mappa = [
     [/tv|televis|audio|soundbar/, '📺'], [/frigo|congel|freddo/, '🧊'], [/lav|asciug/, '🫧'],
     [/forno|cottura|microonde|cucina/, '🍳'], [/caldaia|clima|pompa|riscald/, '🌡️'],
@@ -585,15 +590,16 @@ function mancanze(p) {
 }
 
 function chipStato(s) {
-  const cls = { 'In uso': 'ok', 'In riparazione': 'warn', 'Venduto': '', 'Dismesso': '', 'Sostituito': '' }[s] ?? '';
+  const cls = { 'In uso': 'ok', 'In riparazione': 'warn' }[s] ?? '';
   return `<span class="chip ${cls}">${esc(s || 'In uso')}</span>`;
 }
 function chipGiorni(g) {
   if (g === null) return '';
   if (g < 0) return `<span class="chip danger">Scaduta</span>`;
   if (g === 0) return `<span class="chip danger">Scade oggi</span>`;
-  if (g <= 30) return `<span class="chip warn">${g} gg</span>`;
-  if (g <= 90) return `<span class="chip pri">${g} gg</span>`;
+  if (g === 1) return `<span class="chip warn">Scade domani</span>`;
+  if (g <= 30) return `<span class="chip warn">Tra ${g} giorni</span>`;
+  if (g <= 90) return `<span class="chip pri">Tra ${g} giorni</span>`;
   return `<span class="chip ok">Attiva</span>`;
 }
 function sottotitolo(p) {
@@ -641,7 +647,7 @@ function vLogin() {
   return `<div class="login fade"><form class="box" id="flogin" autocomplete="off">
     <div class="logo">${ico('lock')}</div>
     <h1>Home Vault</h1>
-    <p class="s">L'archivio di casa: acquisti, fatture e garanzie</p>
+    <p class="s">Acquisti, fatture e garanzie di casa</p>
     <div class="form">
       <div class="fld"><label for="lnome">Chi sei?</label>
         <input id="lnome" list="lnomi" maxlength="40" required value="${esc(S.utente)}" placeholder="Il tuo nome">
@@ -659,8 +665,9 @@ function bindLogin() {
     e.preventDefault();
     const nome = $('#lnome').value.trim(), pin = $('#lpin').value.trim(), btn = $('#lbtn');
     $('#lerr').textContent = '';
-    if (!/^\d{6,8}$/.test(pin)) { $('#lerr').textContent = 'Il PIN ha da 6 a 8 cifre.'; return; }
-    btn.disabled = true; btn.textContent = 'Verifica…';
+    if (!nome) { $('#lerr').textContent = 'Scrivi il tuo nome.'; return; }
+    if (!/^\d{6,8}$/.test(pin)) { $('#lerr').textContent = 'Il PIN è di 6, 7 o 8 cifre.'; return; }
+    btn.disabled = true; btn.textContent = 'Controllo…';
     try {
       const r = await api('login', { pin, utente: nome });
       S.token = r.token; S.utente = r.utente;
@@ -676,120 +683,75 @@ function bindLogin() {
 }
 
 function vCaricamento() {
-  return `<div class="wrap"><div class="skel" style="height:150px;margin-bottom:16px"></div>
-    <div class="grid kpis">${'<div class="skel" style="height:84px"></div>'.repeat(4)}</div>
-    <div class="skel" style="height:220px;margin-top:14px"></div></div>`;
+  return `<div class="wrap"><div class="skel" style="height:190px;margin-bottom:12px"></div>
+    <div class="skel" style="height:72px;margin-bottom:24px"></div>
+    <div class="skel" style="height:230px"></div></div>`;
 }
 
 function vErrore(msg) {
-  return `<div class="wrap"><div class="card" style="text-align:center">
+  return `<div class="wrap"><div class="card" style="text-align:center;margin-top:24px">
     <div style="color:var(--danger);margin-bottom:8px">${ico('alert')}</div>
-    <h2 style="justify-content:center">Non riesco a caricare i dati</h2>
+    <h2>Non riesco a caricare i dati</h2>
     <p class="muted">${esc(msg)}</p>
     <button class="btn pri" onclick="S.dati=null;render()">${ico('refresh', 'sm')} Riprova</button>
   </div></div>`;
 }
 
 function barre(voci, max) {
-  if (!voci.length) return '<div class="empty">Ancora nessun dato da mostrare.</div>';
+  if (!voci.length) return '<div class="empty">Ancora nessun dato.</div>';
   return `<div class="bars">${voci.map(([nome, v]) => `<div class="bar">
-    <span class="nm" title="${esc(nome)}">${esc(nome)}</span>
-    <span class="tr"><span class="fl" style="width:${max ? Math.max(3, (v / max) * 100) : 0}%"></span></span>
-    <span class="am">${euroTondo(v)}</span></div>`).join('')}</div>`;
+    <div class="top2"><span class="nm">${esc(nome)}</span><span class="am">${euroTondo(v)}</span></div>
+    <div class="tr"><div class="fl" style="width:${max ? Math.max(3, (v / max) * 100) : 0}%"></div></div></div>`).join('')}</div>`;
 }
 
-function rigaProdotto(p, destra) {
-  return `<a class="rowi" href="#/prodotto/${encodeURIComponent(p['ID'])}">
+// Riga d'elenco: niente colonna larga a destra, le info extra vanno sotto il nome (così non escono dallo schermo).
+function rigaProdotto(p, opz = {}) {
+  return `<a class="riga" href="#/prodotto/${encodeURIComponent(p['ID'])}">
     <span class="emo">${emoji(p)}</span>
-    <span class="tx"><div class="t1">${esc(p['Nome'])}</div><div class="t2">${sottotitolo(p)}</div></span>
-    ${destra || ''}</a>`;
+    <span class="tx"><span class="t1">${esc(p['Nome'])}</span><span class="t2">${sottotitolo(p)}</span>
+      ${opz.meta ? `<span class="meta">${opz.meta}</span>` : ''}</span>
+    ${opz.dx ? `<span class="dx">${opz.dx}</span>` : ''}${ico('chev', 'sm chev')}</a>`;
 }
+function metaScadenza(x) {
+  return `<span>${x.tipo === 'Garanzia' ? 'Garanzia' : 'Garanzia aggiuntiva'} fino al ${fmtData(x.data)}</span>
+    ${chipGiorni(x.giorni)}${x.verificata ? '' : '<span class="chip warn">Da verificare</span>'}`;
+}
+const titolo = (t, n, link, testo) => `<div class="sec-title">${t}${n !== undefined ? ` <span class="n">${n}</span>` : ''}${link ? `<a class="more" href="${link}">${testo || 'Tutti'}</a>` : ''}</div>`;
 
 function vHome() {
   const lista = attivi();
-  const anno = new Date().getFullYear();
   const totale = lista.reduce((s, p) => s + costo(p), 0);
-  const annoCorr = lista.filter(p => parseData(p['Data acquisto'])?.getFullYear() === anno).reduce((s, p) => s + costo(p), 0);
   const sc = scadenze();
-  const inScadenza = sc.filter(x => x.giorni >= 0 && x.giorni <= 90);
+  const daGuardare = sc.filter(x => x.giorni >= -30 && x.giorni <= 90);
+  const incompleti = lista.map(p => [p, mancanze(p)]).filter(([, m]) => m.length);
+  const recenti = lista.slice().sort((a, b) => String(b['Creato il']).localeCompare(String(a['Creato il']))).slice(0, 4);
+  const pill = (href, n, testo) => `<a class="pill" href="${href}"><b>${n}</b><span>${testo}</span></a>`;
+
+  const hero = `<section class="hero">
+    <div class="riga1"><div class="ciao">Ciao ${esc(S.utente)} 👋</div>
+      <button class="icon-btn" id="brefresh" aria-label="Aggiorna">${ico('refresh', 'sm')}</button></div>
+    <div class="lbl">Valore degli acquisti registrati</div>
+    <div class="tot">${euroTondo(totale)}</div>
+    <div class="pills">
+      ${pill('#/prodotti', lista.length, lista.length === 1 ? 'prodotto' : 'prodotti')}
+      ${pill('#/scadenze', daGuardare.length, 'garanzie da guardare')}
+      ${pill('#/prodotti', incompleti.length, 'schede da completare')}
+    </div></section>
+    <a class="btn-scan" href="#/nuovo"><span class="emo">📷</span>
+      <span class="tx"><div class="t1">Aggiungi un acquisto</div><div class="t2">Fotografa la fattura, il resto lo compilo io</div></span>${ico('chev', 'sm chev')}</a>`;
 
   if (!lista.length) {
-    return `<section class="hero"><div class="ciao">Ciao ${esc(S.utente)} 👋</div><h1>Benvenuto in Home Vault</h1>
-      <div class="row"><span class="pill">${ico('box', 'sm')} 0 prodotti</span></div></section>
-      <div class="card" style="text-align:center;padding:28px 16px">
-        <div style="font-size:44px">🏠</div>
-        <h2 style="justify-content:center;font-size:18px">L'archivio è ancora vuoto</h2>
-        <p class="muted">Aggiungi il primo acquisto importante: TV, lavatrice, caldaia…</p>
-        <a class="btn pri" href="#/nuovo">📷 Parti da una fattura</a>
-      </div>`;
+    return hero + `<div class="card empty" style="margin-top:24px"><div style="font-size:40px">🏠</div>
+      <p style="margin:8px 0 0">L'archivio è vuoto. Inizia dagli acquisti importanti: TV, lavatrice, caldaia…</p></div>`;
   }
 
-  const perAnno = {};
-  lista.forEach(p => { const d = parseData(p['Data acquisto']); if (d) perAnno[d.getFullYear()] = (perAnno[d.getFullYear()] || 0) + costo(p); });
-  const anni = Object.keys(perAnno).sort().slice(-6).reverse().map(a => [a, perAnno[a]]);
-  const perCat = {};
-  lista.forEach(p => { const c = p['Categoria'] || 'Senza categoria'; perCat[c] = (perCat[c] || 0) + costo(p); });
-  const cats = Object.entries(perCat).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]).slice(0, 6);
-
-  const recenti = lista.slice().sort((a, b) => String(b['Creato il']).localeCompare(String(a['Creato il']))).slice(0, 5);
-  const incompleti = lista.map(p => [p, mancanze(p)]).filter(([, m]) => m.length).slice(0, 5);
-  const docRecenti = (S.dati.documenti || []).filter(d => d['Attivo'] !== false)
-    .sort((a, b) => String(b['Caricato il']).localeCompare(String(a['Caricato il']))).slice(0, 5);
-  const registro = (S.dati.registro || []).slice(0, 6);
-
-  return `
-  <section class="hero">
-    <div style="display:flex;align-items:flex-start;gap:10px">
-      <div style="flex:1"><div class="ciao">Ciao ${esc(S.utente)} 👋</div><h1>La tua casa</h1></div>
-      <button class="icon-btn" style="background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.25);color:#fff" id="brefresh" aria-label="Aggiorna">${ico('refresh', 'sm')}</button>
-    </div>
-    <div class="row">
-      <a class="pill" href="#/prodotti">${ico('box', 'sm')} ${lista.length} prodott${lista.length === 1 ? 'o' : 'i'}</a>
-      <a class="pill" href="#/scadenze">${ico('shield', 'sm')} ${inScadenza.length} in scadenza</a>
-      <a class="pill" href="#/nuovo">📷 Scansiona fattura</a>
-    </div>
-  </section>
-
-  <div class="grid kpis">
-    <div class="card kpi"><div class="lbl">Valore complessivo</div><div class="val">${euroTondo(totale)}</div></div>
-    <div class="card kpi"><div class="lbl">Spesa ${anno}</div><div class="val">${euroTondo(annoCorr)}</div></div>
-    <div class="card kpi"><div class="lbl">Prodotti registrati</div><div class="val">${lista.length}</div></div>
-    <div class="card kpi ${inScadenza.length ? 'alert' : ''}"><div class="lbl">Garanzie entro 90 gg</div><div class="val">${inScadenza.length}</div></div>
-  </div>
-
-  <div class="grid two" style="margin-top:14px">
-    <div class="card"><h2>Spesa per anno</h2>${barre(anni, Math.max(0, ...anni.map(a => a[1])))}</div>
-    <div class="card"><h2>Spesa per categoria</h2>${barre(cats, Math.max(0, ...cats.map(c => c[1])))}</div>
-  </div>
-
-  <div class="card"><h2>${ico('shield', 'sm')} Garanzie in scadenza <a class="more" href="#/scadenze">Tutte</a></h2>
-    ${inScadenza.length ? `<div class="rows">${inScadenza.slice(0, 5).map(x => rigaProdotto(x.p,
-      `<span style="text-align:right"><div class="small muted">${fmtData(x.data)}</div>${chipGiorni(x.giorni)}</span>`)).join('')}</div>`
-      : '<div class="empty">Nessuna garanzia in scadenza nei prossimi 90 giorni. 👍</div>'}
-  </div>
-
-  <div class="grid two" style="margin-top:14px">
-    <div class="card"><h2>Ultimi inseriti <a class="more" href="#/prodotti">Vedi tutti</a></h2>
-      <div class="rows">${recenti.map(p => rigaProdotto(p, `<span class="am small" style="font-weight:700">${haValore(p['Prezzo']) ? euroTondo(costo(p)) : ''}</span>`)).join('')}</div></div>
-    <div class="card"><h2>${ico('alert', 'sm')} Da completare</h2>
-      ${incompleti.length ? `<div class="rows">${incompleti.map(([p, m]) => `<a class="rowi" href="#/prodotto/${encodeURIComponent(p['ID'])}">
-        <span class="emo">${emoji(p)}</span><span class="tx"><div class="t1">${esc(p['Nome'])}</div>
-        <div class="chips" style="margin-top:4px">${m.map(x => `<span class="chip warn">manca ${esc(x)}</span>`).join('')}</div></span></a>`).join('')}</div>`
-        : '<div class="empty">Tutte le schede sono complete. ✨</div>'}</div>
-  </div>
-
-  ${docRecenti.length ? `<div class="card"><h2>${ico('doc', 'sm')} Documenti recenti</h2><div class="rows">${docRecenti.map(d => {
-    const p = trova(d['ID prodotto']);
-    return `<a class="rowi" href="#/prodotto/${encodeURIComponent(d['ID prodotto'])}"><span class="emo">📄</span>
-      <span class="tx"><div class="t1">${esc(d['Nome file'] || d['Tipo documento'])}</div><div class="t2">${esc(d['Tipo documento'])} · ${esc(p ? p['Nome'] : '')}</div></span></a>`;
-  }).join('')}</div></div>` : ''}
-
-  <div class="card"><h2>Ultime modifiche</h2>
-    ${registro.length ? `<div class="rows">${registro.map(r => `<div class="rowi">
-      <span class="tx"><div class="t1">${esc(r['Operazione'])}: ${esc(r['Dettaglio'])}</div>
-      <div class="t2">${esc(r['Utente'])} · ${fmtDataOra(r['Data'])}</div></span></div>`).join('')}</div>`
-      : '<div class="empty">Nessuna modifica registrata.</div>'}
-  </div>`;
+  return hero
+  + (daGuardare.length ? titolo('Garanzie da guardare', daGuardare.length, '#/scadenze', 'Tutte')
+      + `<div class="lista">${daGuardare.slice(0, 3).map(x => rigaProdotto(x.p, { meta: metaScadenza(x) })).join('')}</div>` : '')
+  + (incompleti.length ? titolo('Da completare', incompleti.length)
+      + `<div class="lista">${incompleti.slice(0, 3).map(([p, m]) => rigaProdotto(p, { meta: m.map(x => `<span class="chip warn">manca ${esc(x)}</span>`).join('') })).join('')}</div>` : '')
+  + titolo('Ultimi inseriti', undefined, '#/prodotti')
+  + `<div class="lista">${recenti.map(p => rigaProdotto(p, { dx: haValore(p['Prezzo']) ? euroTondo(costo(p)) : '' })).join('')}</div>`;
 }
 
 function vProdotti() {
@@ -798,26 +760,26 @@ function vProdotti() {
   const categorie = [...new Set(lista.map(p => p['Categoria']).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'it'));
   const anni = [...new Set(lista.map(p => parseData(p['Data acquisto'])?.getFullYear()).filter(Boolean))].sort((a, b) => b - a);
   const opt = (v, t, sel) => `<option value="${esc(v)}" ${sel === v ? 'selected' : ''}>${esc(t)}</option>`;
+  const attiviFiltri = [f.stato, f.anno, f.min, f.max].filter(Boolean).length + (f.ordine !== 'data-desc' ? 1 : 0);
 
   return `<div class="top"><h1>Prodotti</h1></div>
-  <div class="search">${ico('search')}<input id="q" type="search" placeholder="Cerca nome, marca, modello, n° di serie, negozio, n° fattura…" value="${esc(f.q)}" autocomplete="off"></div>
-  <div class="filters">
-    <select id="fcat" aria-label="Categoria">${opt('', 'Tutte le categorie', f.categoria)}${categorie.map(c => opt(c, c, f.categoria)).join('')}</select>
-    <select id="fstato" aria-label="Stato">${opt('', 'Tutti gli stati', f.stato)}${STATI.map(s => opt(s, s, f.stato)).join('')}</select>
-    <select id="fanno" aria-label="Anno">${opt('', 'Tutti gli anni', f.anno)}${anni.map(a => opt(String(a), String(a), f.anno)).join('')}</select>
-    <select id="fordine" aria-label="Ordina">
-      ${opt('data-desc', 'Più recenti', f.ordine)}${opt('data-asc', 'Meno recenti', f.ordine)}
-      ${opt('prezzo-desc', 'Prezzo più alto', f.ordine)}${opt('prezzo-asc', 'Prezzo più basso', f.ordine)}${opt('nome', 'Nome A–Z', f.ordine)}
-    </select>
+  <div class="search">${ico('search')}<input id="q" type="search" placeholder="Cerca per nome, marca, negozio…" value="${esc(f.q)}" autocomplete="off"></div>
+  <div class="tabs" id="tabs">
+    <button class="tab ${f.categoria ? '' : 'on'}" data-cat="">Tutti</button>
+    ${categorie.map(c => `<button class="tab ${f.categoria === c ? 'on' : ''}" data-cat="${esc(c)}">${esc(c)}</button>`).join('')}
   </div>
-  <details class="more-f" ${f.min || f.max ? 'open' : ''}><summary>Filtra per prezzo</summary>
-    <div class="fgrid" style="grid-template-columns:1fr 1fr;margin-top:8px">
-      <input id="fmin" inputmode="decimal" placeholder="Da € (minimo)" value="${esc(f.min)}">
-      <input id="fmax" inputmode="decimal" placeholder="A € (massimo)" value="${esc(f.max)}">
+  <details class="filtri" ${attiviFiltri ? 'open' : ''}><summary>Filtri e ordine${attiviFiltri ? ` (${attiviFiltri})` : ''} ▾</summary>
+    <div class="fgrid2">
+      <select id="fstato" aria-label="Stato">${opt('', 'Ogni stato', f.stato)}${STATI.map(s => opt(s, s, f.stato)).join('')}</select>
+      <select id="fanno" aria-label="Anno">${opt('', 'Ogni anno', f.anno)}${anni.map(a => opt(String(a), String(a), f.anno)).join('')}</select>
+      <input id="fmin" inputmode="decimal" placeholder="Prezzo da €" value="${esc(f.min)}">
+      <input id="fmax" inputmode="decimal" placeholder="Prezzo fino a €" value="${esc(f.max)}">
+      <select id="fordine" aria-label="Ordina" style="grid-column:1 / -1">
+        ${opt('data-desc', 'Prima i più recenti', f.ordine)}${opt('data-asc', 'Prima i più vecchi', f.ordine)}
+        ${opt('prezzo-desc', 'Prima i più cari', f.ordine)}${opt('prezzo-asc', 'Prima i meno cari', f.ordine)}${opt('nome', 'Nome dalla A alla Z', f.ordine)}
+      </select>
     </div></details>
-  <div class="toolbar"><span id="conteggio"></span>
-    <span class="seg"><button data-vista="schede" class="${S.vista === 'schede' ? 'on' : ''}" aria-label="Vista a schede">${ico('grid', 'sm')}</button>
-    <button data-vista="elenco" class="${S.vista === 'elenco' ? 'on' : ''}" aria-label="Vista a elenco">${ico('list', 'sm')}</button></span></div>
+  <div class="conteggio" id="conteggio"></div>
   <div id="lista"></div>`;
 }
 
@@ -855,30 +817,20 @@ function aggiornaLista() {
   $('#conteggio').textContent = l.length === 1 ? '1 prodotto' : l.length + ' prodotti';
   const box = $('#lista');
   if (!l.length) {
+    box.className = '';
     box.innerHTML = attivi().length
-      ? '<div class="card empty">Nessun prodotto corrisponde alla ricerca.</div>'
+      ? '<div class="card empty">Nessun prodotto trovato con questi filtri.</div>'
       : `<div class="card empty">Ancora nessun prodotto.<br><br><a class="btn pri" href="#/nuovo">${ico('plus', 'sm')} Aggiungi</a></div>`;
     return;
   }
-  const garanzia = p => {
+  box.className = 'lista';
+  box.innerHTML = l.map(p => {
     const g = giorniA(p['Scadenza garanzia']);
-    return g !== null && g <= 90 && ancoraInCasa(p) ? chipGiorni(g) : '';
-  };
-  if (S.vista === 'elenco') {
-    box.className = 'list';
-    box.innerHTML = l.map(p => rigaProdotto(p, `<span style="text-align:right">
-      <div style="font-weight:700">${haValore(p['Prezzo']) ? euroTondo(costo(p)) : ''}</div>
-      <div class="small muted">${p['Data acquisto'] ? fmtData(p['Data acquisto']) : ''}</div></span>`)).join('');
-  } else {
-    box.className = 'cards';
-    box.innerHTML = l.map(p => `<a class="pcard" href="#/prodotto/${encodeURIComponent(p['ID'])}">
-      <span class="emo">${emoji(p)}</span>
-      <div class="t1">${esc(p['Nome'])}</div>
-      <div class="t2">${sottotitolo(p)}</div>
-      <div class="chips">${chipStato(p['Stato'])}${garanzia(p)}</div>
-      <div class="pr">${haValore(p['Prezzo']) ? euroTondo(costo(p)) : '<span class="muted small">Prezzo non inserito</span>'}</div>
-    </a>`).join('');
-  }
+    const meta = ((p['Stato'] && p['Stato'] !== 'In uso') ? chipStato(p['Stato']) : '')
+      + (g !== null && g <= 90 && ancoraInCasa(p) ? chipGiorni(g) : '');
+    const anno = parseData(p['Data acquisto'])?.getFullYear();
+    return rigaProdotto(p, { meta, dx: (haValore(p['Prezzo']) ? euroTondo(costo(p)) : '') + (anno ? `<small>${anno}</small>` : '') });
+  }).join('');
 }
 
 function vScheda(id) {
@@ -888,94 +840,101 @@ function vScheda(id) {
 
   const kv = coppie => {
     const r = coppie.filter(([, v]) => v !== '' && v !== null && v !== undefined && v !== '—');
-    return r.length ? `<dl class="kv">${r.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${v}</dd>`).join('')}</dl>` : '<div class="empty">Nessun dato inserito.</div>';
+    return r.length ? `<dl class="lista kv" style="margin:0">${r.map(([k, v]) => `<div class="riga"><dt>${esc(k)}</dt><dd>${v}</dd></div>`).join('')}</dl>`
+      : '<div class="card empty">Nessun dato inserito.</div>';
   };
-  const link = u => /^https?:\/\//i.test(String(u || '')) ? `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">Apri ↗</a>` : '';
+  const link = u => /^https?:\/\//i.test(String(u || '')) ? `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">Apri il sito ↗</a>` : '';
   const g = giorniA(p['Scadenza garanzia']);
   const ga = giorniA(p['Scadenza garanzia aggiuntiva']);
   const docs = docsDi(p['ID']).sort((a, b) => String(b['Caricato il']).localeCompare(String(a['Caricato il'])));
   const cestinato = !!p['Nel cestino'];
   const idEnc = esc(p['ID']);
+  const tile = (l, v, s) => `<div class="tile"><div class="l">${l}</div><div class="v">${v}</div>${s ? `<div class="s">${s}</div>` : ''}</div>`;
 
   return `<button class="back" onclick="history.length > 1 ? history.back() : (location.hash='#/prodotti')">${ico('back', 'sm')} Indietro</button>
-  ${cestinato ? `<div class="card" style="background:var(--danger-soft);border-color:transparent;margin-bottom:14px">
+  ${cestinato ? `<div class="card" style="background:var(--danger-soft);margin-bottom:14px">
      <strong style="color:var(--danger)">Questo prodotto è nel cestino.</strong>
      <div class="actions" style="margin-top:10px"><button class="btn sec" data-ripristina="${idEnc}">${ico('undo', 'sm')} Ripristina</button></div></div>` : ''}
-  <div class="card">
-    <div class="det-hero"><span class="emo">${emoji(p)}</span>
-      <div style="min-width:0"><h1>${esc(p['Nome'])}</h1><div class="t2">${sottotitolo(p)}</div>
-      <div class="chips" style="margin-top:8px">${chipStato(p['Stato'])}${p['Categoria'] ? `<span class="chip pri">${esc(p['Categoria'])}</span>` : ''}${haFattura(p['ID']) ? '' : '<span class="chip warn">Manca la fattura</span>'}</div></div>
-    </div>
+  <div class="det-hero"><div class="emo">${emoji(p)}</div>
+    <h1>${esc(p['Nome'])}</h1><div class="t2">${sottotitolo(p)}</div>
+    <div class="chips">${chipStato(p['Stato'])}${p['Categoria'] ? `<span class="chip pri">${esc(p['Categoria'])}</span>` : ''}${haFattura(p['ID']) ? '' : '<span class="chip warn">Manca la fattura</span>'}</div>
   </div>
 
-  <div class="sec-title">Documenti · ${docs.length}</div>
-  <div class="card">
-    ${docs.length ? `<div class="rows">${docs.map(d => `<div class="rowi">
-      <span class="emo">${/^image\//.test(d['Formato'] || '') ? '🖼️' : '📄'}</span>
-      <span class="tx"><div class="t1">${esc(d['Tipo documento'])}${num(d['Versione']) > 1 ? ' (' + esc(d['Versione']) + ')' : ''}</div>
-      <div class="t2">${fmtDataOra(d['Caricato il'])}${d['Caricato da'] ? ' · ' + esc(d['Caricato da']) : ''}${d['Dimensione (KB)'] ? ' · ' + esc(d['Dimensione (KB)']) + ' KB' : ''}</div></span>
-      <button class="btn sec" type="button" style="min-height:40px;padding:8px 14px" data-doc="${esc(d['ID'])}">Apri</button></div>`).join('')}</div>`
-      : '<div class="empty">Nessun documento collegato.</div>'}
-    ${cestinato ? '' : `<div class="adddoc">
-      <label for="dtipo" class="small muted" style="font-weight:600">Aggiungi un documento</label>
-      <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap">
-        <select id="dtipo" style="flex:1;min-width:150px">${TIPI_DOC.map(t => `<option ${t === (haFattura(p['ID']) ? 'Manuale' : 'Fattura') ? 'selected' : ''}>${t}</option>`).join('')}</select>
-        <label class="btn sec">📷<input type="file" accept="image/*" capture="environment" hidden data-carica="${idEnc}"></label>
-        <label class="btn sec">📁 File<input type="file" accept="application/pdf,image/jpeg,image/png" hidden data-carica="${idEnc}"></label>
-      </div><div id="dstato" class="small" style="margin-top:8px"></div></div>`}
+  <div class="tiles">
+    ${tile('Pagato', haValore(p['Prezzo']) ? euro(costo(p)) : '—', haValore(p['Prezzo']) ? '' : '<span class="muted">non inserito</span>')}
+    ${tile('Acquistato il', p['Data acquisto'] ? fmtData(p['Data acquisto']) : '—', p['Venditore'] ? `<span class="muted">${esc(p['Venditore'])}</span>` : '')}
+    ${tile('Garanzia fino al', p['Scadenza garanzia'] ? fmtData(p['Scadenza garanzia']) : '—',
+      p['Scadenza garanzia'] ? chipGiorni(g) + (p['Garanzia verificata'] ? '' : ' <span class="chip warn">Da verificare</span>') : '<span class="muted">non indicata</span>')}
+    ${tile('Documenti', docs.length, `<span class="muted">${haFattura(p['ID']) ? 'fattura presente' : 'manca la fattura'}</span>`)}
   </div>
-
-  <div class="sec-title">Acquisto</div>
-  <div class="card">${kv([
-    ['Data acquisto', p['Data acquisto'] ? fmtData(p['Data acquisto']) : ''],
-    ['Negozio', esc(p['Venditore'])],
-    ['N° fattura', esc(p['Numero fattura'])],
-    ['Prezzo', haValore(p['Prezzo']) ? euro(p['Prezzo']) : ''],
-    ['di cui IVA', haValore(p['IVA']) ? euro(p['IVA']) : ''],
-    ['Consegna', haValore(p['Spese consegna']) ? euro(p['Spese consegna']) : ''],
-    ['Installazione', haValore(p['Spese installazione']) ? euro(p['Spese installazione']) : ''],
-    ['Totale speso', (haValore(p['Spese consegna']) || haValore(p['Spese installazione'])) ? `<strong>${euro(costo(p))}</strong>` : ''],
-    ['Pagamento', esc(p['Pagamento'])],
-    ['Acquistato da', esc(p['Acquistato da'])]
-  ])}</div>
-
-  <div class="sec-title">Garanzia</div>
-  <div class="card">${kv([
-    ['Durata', haValore(p['Garanzia (mesi)']) ? esc(p['Garanzia (mesi)']) + ' mesi' : ''],
-    ['Scadenza', p['Scadenza garanzia'] ? `${fmtData(p['Scadenza garanzia'])} ${chipGiorni(g)}` : ''],
-    ['Verificata', p['Scadenza garanzia'] ? (p['Garanzia verificata'] ? '<span class="chip ok">Sì, sul documento</span>' : '<span class="chip warn">Da verificare</span>') : ''],
-    ['Garanzia aggiuntiva', esc(p['Garanzia aggiuntiva'])],
-    ['Scadenza aggiuntiva', p['Scadenza garanzia aggiuntiva'] ? `${fmtData(p['Scadenza garanzia aggiuntiva'])} ${chipGiorni(ga)}` : '']
-  ])}</div>
-
-  <div class="sec-title">Identificazione e casa</div>
-  <div class="card">${kv([
-    ['Categoria', esc([p['Categoria'], p['Sottocategoria']].filter(Boolean).join(' › '))],
-    ['Numero di serie', esc(p['Numero di serie'])],
-    ['Codice prodotto', esc(p['Codice prodotto'])],
-    ['Ambiente', esc(p['Ambiente'])],
-    ['Installato il', p['Data installazione'] ? fmtData(p['Data installazione']) : ''],
-    ['Pagina prodotto', link(p['Link prodotto'])],
-    ['Sito produttore', link(p['Link produttore'])]
-  ])}</div>
-
-  ${p['Note'] ? `<div class="sec-title">Note</div><div class="card note">${esc(p['Note'])}</div>` : ''}
-
-  <p class="small muted" style="margin-top:14px">Codice ${esc(p['ID'])} · creato il ${fmtDataOra(p['Creato il'])} · aggiornato il ${fmtDataOra(p['Aggiornato il'])}</p>
 
   ${cestinato ? '' : `<div class="actions">
     <a class="btn pri" style="flex:1" href="#/modifica/${encodeURIComponent(p['ID'])}">${ico('edit', 'sm')} Modifica</a>
-    <button class="btn dng" data-cestina="${idEnc}">${ico('trash', 'sm')} Cestino</button>
-  </div>`}`;
+    <button class="btn dng" data-cestina="${idEnc}" aria-label="Sposta nel cestino">${ico('trash', 'sm')}</button>
+  </div>`}
+
+  ${titolo('Documenti', docs.length)}
+  <div class="lista">
+    ${docs.map(d => `<div class="riga">
+      <span class="emo">${/^image\//.test(d['Formato'] || '') ? '🖼️' : '📄'}</span>
+      <span class="tx"><span class="t1">${esc(d['Tipo documento'])}${num(d['Versione']) > 1 ? ' (' + esc(d['Versione']) + ')' : ''}</span>
+      <span class="t2">${fmtDataOra(d['Caricato il'])}${d['Caricato da'] ? ' · ' + esc(d['Caricato da']) : ''}</span></span>
+      <button class="btn sec mini" type="button" data-doc="${esc(d['ID'])}">Apri</button></div>`).join('')}
+    ${!docs.length && cestinato ? '<div class="empty">Nessun documento collegato.</div>' : ''}
+    ${cestinato ? '' : `<div class="adddoc"${docs.length ? '' : ' style="border-top:0"'}>
+      <label for="dtipo" class="small muted" style="font-weight:650">Aggiungi un documento</label>
+      <div class="rr">
+        <select id="dtipo">${TIPI_DOC.map(t => `<option ${t === (haFattura(p['ID']) ? 'Manuale' : 'Fattura') ? 'selected' : ''}>${t}</option>`).join('')}</select>
+        <label class="btn sec mini" aria-label="Scatta foto">📷<input type="file" accept="image/*" capture="environment" hidden data-carica="${idEnc}"></label>
+        <label class="btn sec mini" aria-label="Scegli file">📁<input type="file" accept="application/pdf,image/jpeg,image/png" hidden data-carica="${idEnc}"></label>
+      </div><div id="dstato" class="small" style="margin-top:8px"></div></div>`}
+  </div>
+
+  ${titolo('Acquisto')}
+  ${kv([
+    ['Negozio', esc(p['Venditore'])],
+    ['Numero fattura', esc(p['Numero fattura'])],
+    ['Prezzo', haValore(p['Prezzo']) ? euro(p['Prezzo']) : ''],
+    ['di cui IVA', haValore(p['IVA']) ? euro(p['IVA']) : ''],
+    ['Spese di consegna', haValore(p['Spese consegna']) ? euro(p['Spese consegna']) : ''],
+    ['Spese di installazione', haValore(p['Spese installazione']) ? euro(p['Spese installazione']) : ''],
+    ['Totale speso', (haValore(p['Spese consegna']) || haValore(p['Spese installazione'])) ? `<strong>${euro(costo(p))}</strong>` : ''],
+    ['Pagamento', esc(p['Pagamento'])],
+    ['Acquistato da', esc(p['Acquistato da'])]
+  ])}
+
+  ${titolo('Garanzia')}
+  ${kv([
+    ['Durata', haValore(p['Garanzia (mesi)']) ? esc(p['Garanzia (mesi)']) + ' mesi' : ''],
+    ['Scade il', p['Scadenza garanzia'] ? `${fmtData(p['Scadenza garanzia'])} ${chipGiorni(g)}` : ''],
+    ['Controllata sul documento', p['Scadenza garanzia'] ? (p['Garanzia verificata'] ? 'Sì' : '<span class="chip warn" style="margin:0">Non ancora</span>') : ''],
+    ['Garanzia aggiuntiva', esc(p['Garanzia aggiuntiva'])],
+    ['Garanzia aggiuntiva fino al', p['Scadenza garanzia aggiuntiva'] ? `${fmtData(p['Scadenza garanzia aggiuntiva'])} ${chipGiorni(ga)}` : '']
+  ])}
+
+  ${titolo('Dettagli')}
+  ${kv([
+    ['Categoria', esc([p['Categoria'], p['Sottocategoria']].filter(Boolean).join(' › '))],
+    ['Dove si trova', esc(p['Ambiente'])],
+    ['Numero di serie', esc(p['Numero di serie'])],
+    ['Codice prodotto', esc(p['Codice prodotto'])],
+    ['Installato il', p['Data installazione'] ? fmtData(p['Data installazione']) : ''],
+    ['Pagina del prodotto', link(p['Link prodotto'])],
+    ['Sito del produttore', link(p['Link produttore'])]
+  ])}
+
+  ${p['Note'] ? `${titolo('Note')}<div class="card note">${esc(p['Note'])}</div>` : ''}
+
+  <p class="small muted" style="margin-top:18px;text-align:center">Aggiornato il ${fmtDataOra(p['Aggiornato il']) || fmtDataOra(p['Creato il'])}</p>`;
 }
 
 function vScan() {
   return `<div class="card scan">
     <h2>📷 Parti dalla fattura</h2>
-    <p class="muted small" style="margin:0">Fotografala o carica il PDF: provo a leggere negozio, data, prezzo e prodotto. Poi controlli tu e salvi.</p>
-    <div class="actions" style="margin-top:12px">
-      <label class="btn pri" style="flex:1">📷 Scatta foto<input type="file" accept="image/*" capture="environment" hidden id="fcam"></label>
-      <label class="btn sec" style="flex:1">📁 Scegli file<input type="file" accept="application/pdf,image/jpeg,image/png" hidden id="ffile"></label>
+    <p class="muted small" style="margin:0">Fai una foto o carica il PDF: leggo negozio, data, prezzo e prodotto. Tu controlli e salvi.</p>
+    <div class="actions">
+      <label class="btn pri">📷 Foto<input type="file" accept="image/*" capture="environment" hidden id="fcam"></label>
+      <label class="btn sec">📁 File o PDF<input type="file" accept="application/pdf,image/jpeg,image/png" hidden id="ffile"></label>
     </div>
     <div id="scanstato"></div>
   </div>`;
@@ -1004,7 +963,7 @@ function vModulo(id) {
       case 'url': input = `<input id="${idc}" type="url" inputmode="url" data-campo="${esc(nome)}" value="${esc(val)}" placeholder="https://…">`; break;
       case 'area': input = `<textarea id="${idc}" data-campo="${esc(nome)}" maxlength="3000">${esc(val)}</textarea>`; break;
       case 'stato': input = `<select id="${idc}" data-campo="${esc(nome)}">${STATI.map(s => `<option ${(val || 'In uso') === s ? 'selected' : ''}>${s}</option>`).join('')}</select>`; break;
-      case 'bool': return `<div class="${cls}"><label class="check"><input id="${idc}" type="checkbox" data-campo="${esc(nome)}" ${val === true ? 'checked' : ''}> ${esc(opz.etichetta || nome)}</label>${hint}</div>`;
+      case 'bool': return `<div class="${cls}"><label class="check"><input id="${idc}" type="checkbox" data-campo="${esc(nome)}" ${val === true ? 'checked' : ''}> <span>${esc(opz.etichetta || nome)}</span></label>${hint}</div>`;
       default: input = `<input id="${idc}" data-campo="${esc(nome)}" value="${esc(val)}" maxlength="200" ${opz.list ? `list="${opz.list}"` : ''} ${opz.req ? 'required' : ''} ${opz.ph ? `placeholder="${esc(opz.ph)}"` : ''}>`;
     }
     return `<div class="${cls}">${lab}${input}${hint}</div>`;
@@ -1026,32 +985,32 @@ function vModulo(id) {
       ${campo('Categoria', 'text', { list: 'dlcat', ph: 'Scegli o scrivi' })}
       ${campo('Marca', 'text')}
       ${campo('Modello', 'text')}
-      ${campo('Data acquisto', 'date')}
+      ${campo('Data acquisto', 'date', { label: 'Data di acquisto' })}
       ${campo('Venditore', 'text', { label: 'Negozio', ph: 'Negozio o sito' })}
-      ${campo('Prezzo', 'euro', { label: 'Prezzo pagato' })}
-      ${campo('Garanzia (mesi)', 'int', { label: 'Garanzia (mesi)', hint: 'Copia la durata dal documento: non tutte le garanzie durano uguale.' })}
-      ${campo('Scadenza garanzia', 'date')}
+      ${campo('Prezzo', 'euro', { label: 'Prezzo pagato (€)' })}
+      ${campo('Garanzia (mesi)', 'int', { label: 'Garanzia (mesi)', hint: 'Copiala dal documento: non tutte durano 24 mesi.' })}
+      ${campo('Scadenza garanzia', 'date', { label: 'Garanzia fino al' })}
       ${campo('Garanzia verificata', 'bool', { etichetta: 'Ho controllato la garanzia sul documento', wide: true })}
     </div></div>
 
     <details class="card altri" id="altri" ${apriAltri ? 'open' : ''}>
-      <summary><span>Altri dettagli</span><span class="muted small">facoltativi ▾</span></summary>
+      <summary><span>Altri dettagli <span class="muted small" style="font-weight:500">· facoltativi</span></span><span class="fr">▾</span></summary>
       <div class="fgrid" style="margin-top:14px">
-        ${campo('Sottocategoria', 'text', { list: 'dlsub' })}
         ${campo('Stato', 'stato')}
+        ${campo('Sottocategoria', 'text', { list: 'dlsub' })}
+        ${campo('Ambiente', 'text', { list: 'dlamb', label: 'Dove si trova', ph: 'es. Cucina' })}
         ${campo('Numero di serie', 'text', { hint: 'Di solito è sulla targhetta, dietro o dentro lo sportello.' })}
         ${campo('Codice prodotto', 'text')}
         ${campo('Numero fattura', 'text')}
-        ${campo('IVA', 'euro', { label: 'di cui IVA' })}
-        ${campo('Spese consegna', 'euro')}
-        ${campo('Spese installazione', 'euro')}
-        ${campo('Pagamento', 'text', { list: 'dlpag' })}
+        ${campo('IVA', 'euro', { label: 'di cui IVA (€)' })}
+        ${campo('Spese consegna', 'euro', { label: 'Spese di consegna (€)' })}
+        ${campo('Spese installazione', 'euro', { label: 'Spese di installazione (€)' })}
+        ${campo('Pagamento', 'text', { list: 'dlpag', label: 'Come hai pagato' })}
         ${campo('Acquistato da', 'text', { list: 'dlute' })}
-        ${campo('Ambiente', 'text', { list: 'dlamb', label: 'Dove si trova', ph: 'es. Cucina' })}
-        ${campo('Data installazione', 'date')}
+        ${campo('Data installazione', 'date', { label: 'Installato il' })}
         ${campo('Garanzia aggiuntiva', 'text', { ph: 'es. Estensione 5 anni del negozio' })}
-        ${campo('Scadenza garanzia aggiuntiva', 'date')}
-        ${campo('Link prodotto', 'url')}${campo('Link produttore', 'url')}
+        ${campo('Scadenza garanzia aggiuntiva', 'date', { label: 'Garanzia aggiuntiva fino al' })}
+        ${campo('Link prodotto', 'url', { label: 'Pagina del prodotto' })}${campo('Link produttore', 'url', { label: 'Sito del produttore' })}
         ${campo('Note', 'area', { wide: true })}
       </div>
     </details>
@@ -1066,49 +1025,66 @@ function vScadenze() {
   const gruppi = [
     ['Scadute', x => x.giorni < 0],
     ['Entro 30 giorni', x => x.giorni >= 0 && x.giorni <= 30],
-    ['Tra 31 e 60 giorni', x => x.giorni > 30 && x.giorni <= 60],
-    ['Tra 61 e 90 giorni', x => x.giorni > 60 && x.giorni <= 90],
-    ['Attive (oltre 90 giorni)', x => x.giorni > 90]
+    ['Entro 3 mesi', x => x.giorni > 30 && x.giorni <= 90],
+    ['Ancora valide', x => x.giorni > 90]
   ];
   const senza = attivi().filter(ancoraInCasa).filter(p => !p['Scadenza garanzia'] && !p['Scadenza garanzia aggiuntiva']);
-  const riga = x => rigaProdotto(x.p, `<span style="text-align:right">
-    <div class="small muted">${x.tipo === 'Garanzia' ? '' : esc(x.tipo) + ' · '}${fmtData(x.data)}</div>
-    <div class="chips" style="justify-content:flex-end;margin-top:2px">${x.verificata ? '' : '<span class="chip warn">Da verificare</span>'}${chipGiorni(x.giorni)}</div></span>`);
+  const daVerificare = sc.filter(x => !x.verificata).length;
 
   return `<div class="top"><h1>Garanzie</h1></div>
-  <p class="muted small" style="margin-top:-8px">Le date sono quelle inserite nelle schede. Quelle "da verificare" vanno controllate sul documento.</p>
-  ${sc.length ? gruppi.map(([titolo, f]) => {
+  ${daVerificare ? `<p class="intro">Le date <span class="chip warn">Da verificare</span> sono calcolate: controllale sulla fattura o sul certificato.</p>` : ''}
+  ${sc.length ? gruppi.map(([t, f]) => {
     const l = sc.filter(f);
-    return l.length ? `<div class="sec-title">${titolo} · ${l.length}</div><div class="card"><div class="rows">${l.map(riga).join('')}</div></div>` : '';
-  }).join('') : '<div class="card empty">Nessuna garanzia con data di scadenza. Inseriscila nelle schede dei prodotti.</div>'}
-  ${senza.length ? `<div class="sec-title">Senza scadenza indicata · ${senza.length}</div>
-    <div class="card"><div class="rows">${senza.map(p => rigaProdotto(p, '<span class="chip">manca la data</span>')).join('')}</div></div>` : ''}`;
+    return l.length ? titolo(t, l.length) + `<div class="lista">${l.map(x => rigaProdotto(x.p, { meta: metaScadenza(x) })).join('')}</div>` : '';
+  }).join('') : '<div class="card empty">Nessuna garanzia con una data. Aggiungila nella scheda del prodotto.</div>'}
+  ${senza.length ? titolo('Senza data', senza.length)
+    + `<div class="lista">${senza.map(p => rigaProdotto(p, { meta: '<span class="chip">manca la data della garanzia</span>' })).join('')}</div>` : ''}`;
 }
 
 function vAltro() {
   const cest = nelCestino();
   const tema = mem.get('hv_tema') || 'auto';
+  const lista = attivi();
+  const anno = new Date().getFullYear();
+  const totale = lista.reduce((s, p) => s + costo(p), 0);
+  const annoCorr = lista.filter(p => parseData(p['Data acquisto'])?.getFullYear() === anno).reduce((s, p) => s + costo(p), 0);
+  const perAnno = {};
+  lista.forEach(p => { const d = parseData(p['Data acquisto']); if (d) perAnno[d.getFullYear()] = (perAnno[d.getFullYear()] || 0) + costo(p); });
+  const anni = Object.keys(perAnno).sort().slice(-5).reverse().map(a => [a, perAnno[a]]);
+  const perCat = {};
+  lista.forEach(p => { const c = p['Categoria'] || 'Senza categoria'; perCat[c] = (perCat[c] || 0) + costo(p); });
+  const cats = Object.entries(perCat).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  const registro = (S.dati.registro || []).slice(0, 6);
+
   return `<div class="top"><h1>Altro</h1></div>
-  <div class="card"><div class="rowi" style="padding:0"><span class="emo">👤</span>
-    <span class="tx"><div class="t1">${esc(S.utente)}</div><div class="t2">Connesso a Home Vault</div></span></div></div>
+  <div class="lista"><div class="riga"><span class="emo">👤</span>
+    <span class="tx"><span class="t1">${esc(S.utente)}</span><span class="t2">Connesso a Home Vault</span></span>
+    <button class="btn dng mini" id="besci">${ico('out', 'sm')} Esci</button></div></div>
 
-  <div class="sec-title">Aspetto</div>
-  <div class="card"><div class="fld"><label for="tema">Tema</label>
-    <select id="tema"><option value="auto" ${tema === 'auto' ? 'selected' : ''}>Automatico (come il telefono)</option>
-    <option value="light" ${tema === 'light' ? 'selected' : ''}>Chiaro</option><option value="dark" ${tema === 'dark' ? 'selected' : ''}>Scuro</option></select></div></div>
+  ${titolo('Quanto abbiamo speso')}
+  <div class="tiles" style="margin-top:0">
+    <div class="tile"><div class="l">In totale</div><div class="v">${euroTondo(totale)}</div></div>
+    <div class="tile"><div class="l">Nel ${anno}</div><div class="v">${euroTondo(annoCorr)}</div></div>
+  </div>
+  <div class="card" style="margin-top:10px"><h2>Per anno</h2>${barre(anni, Math.max(0, ...anni.map(a => a[1])))}</div>
+  <div class="card"><h2>Per categoria</h2>${barre(cats, Math.max(0, ...cats.map(c => c[1])))}</div>
 
-  <div class="sec-title">Cestino · ${cest.length}</div>
-  <div class="card">${cest.length ? `<div class="rows">${cest.map(p => `<div class="rowi"><span class="emo">${emoji(p)}</span>
-    <span class="tx"><div class="t1">${esc(p['Nome'])}</div><div class="t2">Eliminato da ${esc(p['Eliminato da'] || '?')} · ${fmtDataOra(p['Eliminato il'])}</div></span>
-    <button class="btn sec" style="min-height:40px;padding:8px 12px" data-ripristina="${esc(p['ID'])}">${ico('undo', 'sm')}</button></div>`).join('')}</div>
-    <p class="small muted" style="margin:12px 0 0">Gli elementi nel cestino si possono sempre ripristinare.</p>`
+  ${titolo('Cestino', cest.length)}
+  <div class="lista">${cest.length ? cest.map(p => `<div class="riga"><span class="emo">${emoji(p)}</span>
+    <span class="tx"><span class="t1">${esc(p['Nome'])}</span><span class="t2">Tolto da ${esc(p['Eliminato da'] || '?')} · ${fmtDataOra(p['Eliminato il'])}</span></span>
+    <button class="btn sec mini" data-ripristina="${esc(p['ID'])}" aria-label="Ripristina">${ico('undo', 'sm')}</button></div>`).join('')
     : '<div class="empty">Il cestino è vuoto.</div>'}</div>
 
-  <div class="sec-title">Dati</div>
-  <div class="card"><div class="actions" style="margin:0">
-    <button class="btn sec" id="brefresh">${ico('refresh', 'sm')} Aggiorna dati</button>
-    <button class="btn dng" id="besci">${ico('out', 'sm')} Esci</button></div>
-    <p class="small muted" style="margin:12px 0 0">I dati sono nel foglio Google privato di Federico. Home Vault ${VERSIONE}</p></div>`;
+  ${registro.length ? titolo('Ultime modifiche') + `<div class="lista">${registro.map(r => `<div class="riga">
+    <span class="tx"><span class="t1" style="font-weight:550">${esc(r['Operazione'])}: ${esc(r['Dettaglio'])}</span>
+    <span class="t2">${esc(r['Utente'])} · ${fmtDataOra(r['Data'])}</span></span></div>`).join('')}</div>` : ''}
+
+  ${titolo('Impostazioni')}
+  <div class="card"><div class="fld"><label for="tema">Aspetto</label>
+    <select id="tema"><option value="auto" ${tema === 'auto' ? 'selected' : ''}>Come il telefono</option>
+    <option value="light" ${tema === 'light' ? 'selected' : ''}>Chiaro</option><option value="dark" ${tema === 'dark' ? 'selected' : ''}>Scuro</option></select></div>
+    <button class="btn sec full" id="brefresh" style="margin-top:14px">${ico('refresh', 'sm')} Aggiorna i dati</button>
+    <p class="small muted" style="margin:12px 0 0;text-align:center">I dati stanno nel foglio Google privato di Federico · Home Vault ${VERSIONE}</p></div>`;
 }
 
 /* ---------- Eventi ---------- */
@@ -1151,17 +1127,16 @@ function bindProdotti() {
   const f = S.filtri;
   let t;
   $('#q').oninput = e => { clearTimeout(t); t = setTimeout(() => { f.q = e.target.value; aggiornaLista(); }, 150); };
-  $('#fcat').onchange = e => { f.categoria = e.target.value; aggiornaLista(); };
+  $$('#tabs [data-cat]').forEach(b => b.onclick = () => {
+    f.categoria = b.dataset.cat;
+    $$('#tabs [data-cat]').forEach(x => x.classList.toggle('on', x === b));
+    aggiornaLista();
+  });
   $('#fstato').onchange = e => { f.stato = e.target.value; aggiornaLista(); };
   $('#fanno').onchange = e => { f.anno = e.target.value; aggiornaLista(); };
   $('#fordine').onchange = e => { f.ordine = e.target.value; aggiornaLista(); };
   $('#fmin').oninput = e => { f.min = e.target.value; aggiornaLista(); };
   $('#fmax').oninput = e => { f.max = e.target.value; aggiornaLista(); };
-  $$('[data-vista]').forEach(b => b.onclick = () => {
-    S.vista = b.dataset.vista; mem.set('hv_vista', S.vista);
-    $$('[data-vista]').forEach(x => x.classList.toggle('on', x === b));
-    aggiornaLista();
-  });
   aggiornaLista();
 }
 
@@ -1259,7 +1234,7 @@ function bindModulo(id) {
           ? `Ho compilato ${n} camp${n === 1 ? 'o' : 'i'} (in giallo): controllali prima di salvare.`
           : 'Non ho trovato dati sicuri da compilare: inseriscili tu, la fattura resta comunque allegata.'}</p>
         ${r.avviso ? `<p class="small" style="color:var(--warn);margin:6px 0 0">${esc(r.avviso)}</p>` : ''}
-        ${(r.righe || []).length ? `<details class="more-f"><summary>Testo letto · tocca una riga per usarla come nome</summary>
+        ${(r.righe || []).length ? `<details class="letto"><summary>Testo letto · tocca una riga per usarla come nome ▾</summary>
           <div class="chips" style="margin-top:8px">${r.righe.map(x => `<button type="button" class="chip linechip" data-riga="${esc(x)}">${esc(x)}</button>`).join('')}</div></details>` : ''}`;
 
       $$('[data-riga]', stato).forEach(b => b.onclick = () => {
