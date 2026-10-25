@@ -718,6 +718,13 @@ function metaScadenza(x) {
 }
 const titolo = (t, n, link, testo) => `<div class="sec-title">${t}${n !== undefined ? ` <span class="n">${n}</span>` : ''}${link ? `<a class="more" href="${link}">${testo || 'Tutti'}</a>` : ''}</div>`;
 
+// Ecosistema: apre Lavori di casa con un lavoro già compilato per questo prodotto (es. manutenzione, riparazione)
+function linkLavori(p) {
+  const nome = p['Nome'] || 'prodotto';
+  const q = new URLSearchParams({ emoji: '🔧', titolo: ('Manutenzione ' + nome).slice(0, 80), data: '',
+    dettagli: 'Da Gestione Casa: ' + nome + (p['Ambiente'] ? ' (' + p['Ambiente'] + ')' : '') });
+  return '../Lavori/#nuovo?' + q.toString();
+}
 function vHome() {
   const lista = attivi();
   const totale = lista.reduce((s, p) => s + costo(p), 0);
@@ -729,7 +736,8 @@ function vHome() {
 
   const hero = `<section class="hero">
     <div class="riga1"><div class="ciao">Ciao ${esc(S.utente)} 👋</div>
-      <button class="icon-btn" id="brefresh" aria-label="Aggiorna">${ico('refresh', 'sm')}</button></div>
+      <span style="display:flex;gap:8px"><a class="icon-btn" href="../Casa/" aria-label="Le mie app" title="Le mie app"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2.5" fill="#34a373"/><rect x="13" y="3" width="8" height="8" rx="2.5" fill="#e0962f"/><rect x="3" y="13" width="8" height="8" rx="2.5" fill="#9b72ff"/><rect x="13" y="13" width="8" height="8" rx="2.5" fill="#8fa6ff"/></svg></a>
+      <button class="icon-btn" id="brefresh" aria-label="Aggiorna">${ico('refresh', 'sm')}</button></span></div>
     <div class="lbl">Valore degli acquisti registrati</div>
     <div class="tot">${euroTondo(totale)}</div>
     <div class="pills">
@@ -871,7 +879,8 @@ function vScheda(id) {
   ${cestinato ? '' : `<div class="actions">
     <a class="btn pri" style="flex:1" href="#/modifica/${encodeURIComponent(p['ID'])}">${ico('edit', 'sm')} Modifica</a>
     <button class="btn dng" data-cestina="${idEnc}" aria-label="Sposta nel cestino">${ico('trash', 'sm')}</button>
-  </div>`}
+  </div>
+  <a class="btn sec" style="width:100%%;margin-top:10px;justify-content:center" href="${esc(linkLavori(p))}">🧰 Programma un lavoro in Lavori di casa</a>`}
 
   ${titolo('Documenti', docs.length)}
   <div class="lista">
