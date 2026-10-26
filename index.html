@@ -653,8 +653,8 @@ function vLogin() {
       <div class="fld"><label for="lnome">Chi sei?</label>
         <input id="lnome" list="lnomi" maxlength="40" required value="${esc(S.utente)}" placeholder="Il tuo nome">
         <datalist id="lnomi">${nomi.map(n => `<option value="${n}">`).join('')}</datalist></div>
-      <div class="fld"><label for="lpin">PIN di famiglia</label>
-        <input id="lpin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" required placeholder="••••••" autocomplete="off"></div>
+      <div class="fld"><label for="lpin">Chiave di famiglia</label>
+        <input id="lpin" type="password" maxlength="40" required placeholder="••••••••" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></div>
       <div class="err" id="lerr"></div>
       <button class="btn pri full" id="lbtn">Entra</button>
     </div>
@@ -667,7 +667,7 @@ function bindLogin() {
     const nome = $('#lnome').value.trim(), pin = $('#lpin').value.trim(), btn = $('#lbtn');
     $('#lerr').textContent = '';
     if (!nome) { $('#lerr').textContent = 'Scrivi il tuo nome.'; return; }
-    if (!/^\d{6,8}$/.test(pin)) { $('#lerr').textContent = 'Il PIN è di 6, 7 o 8 cifre.'; return; }
+    if (!/^(?!.*['"`\\])[\x21-\x7E]{6,40}$/.test(pin)) { $('#lerr').textContent = 'Controlla la chiave: niente spazi, accenti o virgolette.'; return; }
     btn.disabled = true; btn.textContent = 'Controllo…';
     try {
       const r = await api('login', { pin, utente: nome });
